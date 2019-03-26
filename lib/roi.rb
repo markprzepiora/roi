@@ -26,14 +26,24 @@ module Roi
       def validate(value)
         Fail.new
       end
+
+      private
+
+      def Pass(value)
+        Pass.new(value)
+      end
+
+      def Fail
+        Fail.new
+      end
     end
 
     class StringSchema < BaseSchema
       def validate(value)
         if value.is_a?(String)
-          Pass.new(value)
+          Pass(value)
         else
-          Fail.new
+          Fail()
         end
       end
     end
@@ -41,9 +51,9 @@ module Roi
     class ObjectSchema < BaseSchema
       def validate(value)
         if value.is_a?(Hash)
-          Pass.new(value)
+          Pass(value)
         else
-          Fail.new
+          Fail()
         end
       end
     end
