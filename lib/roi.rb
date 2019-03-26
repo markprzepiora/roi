@@ -2,18 +2,36 @@ require "roi/version"
 
 module Roi
   def self.object
-    Schema.new
+    Schemas::ObjectSchema.new
   end
 
-  class OK < Struct.new(:value)
+  class Pass < Struct.new(:value)
     def ok?
       true
     end
   end
 
-  class Schema
-    def validate(value)
-      OK.new(value)
+  class Fail
+    def ok?
+      false
+    end
+  end
+
+  module Schemas
+    class BaseSchema
+      def validate(value)
+        Pass.new(value)
+      end
+    end
+
+    class ObjectSchema < BaseSchema
+      def validate(value)
+        if value.is_a?(Hash)
+          Pass.new(value)
+        else
+          Fail.new
+        end
+      end
     end
   end
 end
