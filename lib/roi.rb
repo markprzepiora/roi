@@ -23,11 +23,25 @@ module Roi
 
   module Schemas
     class BaseSchema
+      def initialize
+        @tests = []
+      end
+
       def validate(value)
-        Fail.new
+        @tests.each do |test|
+          result = test.call(value)
+          return result if !result.ok?
+          value = result.value
+        end
+
+        Pass(value)
       end
 
       private
+
+      def add_test(&block)
+        @tests << block
+      end
 
       def Pass(value)
         Pass.new(value)
@@ -39,21 +53,27 @@ module Roi
     end
 
     class StringSchema < BaseSchema
-      def validate(value)
-        if value.is_a?(String)
-          Pass(value)
-        else
-          Fail()
+      def initialize
+        super
+        add_test do |value|
+          if value.is_a?(String)
+            Pass(value)
+          else
+            Fail()
+          end
         end
       end
     end
 
     class ObjectSchema < BaseSchema
-      def validate(value)
-        if value.is_a?(Hash)
-          Pass(value)
-        else
-          Fail()
+      def initialize
+        super
+        add_test do |value|
+          if value.is_a?(Hash)
+            Pass(value)
+          else
+            Fail()
+          end
         end
       end
     end
