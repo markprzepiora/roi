@@ -1,6 +1,10 @@
 require "roi/version"
 
 module Roi
+  def self.string
+    Schemas::StringSchema.new
+  end
+
   def self.object
     Schemas::ObjectSchema.new
   end
@@ -20,7 +24,17 @@ module Roi
   module Schemas
     class BaseSchema
       def validate(value)
-        Pass.new(value)
+        Fail.new
+      end
+    end
+
+    class StringSchema < BaseSchema
+      def validate(value)
+        if value.is_a?(String)
+          Pass.new(value)
+        else
+          Fail.new
+        end
       end
     end
 

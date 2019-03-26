@@ -3,7 +3,24 @@ describe Roi do
     Roi::VERSION.should_not be_nil
   end
 
-  it "successfully validates a trivial schema and returns the input" do
+  it "validates a simple string schema (pass)" do
+    value = "a string"
+    schema = Roi.string
+    result = schema.validate(value)
+
+    result.should be_ok
+    result.value.should == value
+  end
+
+  it "validates a simple string schema (fail)" do
+    value = nil
+    schema = Roi.string
+    result = schema.validate(value)
+
+    result.should_not be_ok
+  end
+
+  it "successfully validates a trivial object schema and returns the input" do
     hash = {}
     schema = Roi.object
     result = schema.validate(hash)
