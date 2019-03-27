@@ -37,7 +37,16 @@ module Roi::Schemas
       end
 
       @tests.each do |test|
-        result = test.call(value, context) || Pass(value)
+        result = begin
+          test.call(value, context) || Pass(value)
+        rescue StandardError => e
+          Fail([
+            context.error(
+              validator_name: "uncaught_exception",
+              message: "an exception was raised: #{e.message}"
+            )
+          ])
+        end
         return result if !result.ok?
         value = result.value
       end
