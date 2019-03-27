@@ -188,6 +188,14 @@ module Roi
             ])
           end
         end
+
+        add_test do |value, context|
+          if @max && value > @max
+            Fail([
+              context.error(validator_name: "#{name}.max", message: "must be <= #{@max}")
+            ])
+          end
+        end
       end
 
       def name
@@ -196,6 +204,11 @@ module Roi
 
       def min(min)
         @min = min
+        self
+      end
+
+      def max(max)
+        @max = max
         self
       end
     end
