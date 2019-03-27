@@ -96,9 +96,25 @@ module Roi::Schemas
       add_test do |value, context|
         error = context.error(
           validator_name: "#{name}.must_be",
-          message: "value must be truthy for ##{method_name}")
+          message: "##{method_name} must be true")
         begin
           if !value.respond_to?(method_name) || !value.public_send(method_name)
+            Fail([error])
+          end
+        rescue StandardError => e
+          Fail([error])
+        end
+      end
+      self
+    end
+
+    def must_not_be(method_name)
+      add_test do |value, context|
+        error = context.error(
+          validator_name: "#{name}.must_not_be",
+          message: "##{method_name} must be false")
+        begin
+          if value.respond_to?(method_name) && value.public_send(method_name)
             Fail([error])
           end
         rescue StandardError => e
