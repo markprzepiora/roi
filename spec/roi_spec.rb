@@ -125,6 +125,13 @@ describe Roi do
         passing_values: ['a string', ' '],
         failing_values: ['']
     end
+
+    describe ".present" do
+      include_examples "passing and failing values",
+        schema: 'Roi.string.present',
+        passing_values: ['a string', ' /'],
+        failing_values: ['', ' ', " \n "]
+    end
   end
 
   describe ".int" do
