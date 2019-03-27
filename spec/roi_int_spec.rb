@@ -48,5 +48,17 @@ describe "Roi.int" do
       schema: 'Roi.int.cast',
       input_value: "-0",
       output_value: 0
+
+    include_examples "passing and failing values",
+      schema: 'Roi.int.min(1).cast',
+      passing_values: [ 1, "1", "123" ],
+      failing_values: [ "0", 0 ]
+
+    include_examples "error message",
+      schema: 'Roi.int.cast',
+      input_value: "",
+      error_message: 'cannot be cast to an integer',
+      error_path: [],
+      error_validator_name: 'int.cast'
   end
 end
