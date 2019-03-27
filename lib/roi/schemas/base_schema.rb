@@ -11,6 +11,7 @@ module Roi::Schemas
       @required = false
       @valids = Set.new
       @invalids = Set.new
+      add_test(&method(:cast_value_wrapper))
     end
 
     def name
@@ -131,7 +132,20 @@ module Roi::Schemas
       end
     end
 
+    def cast
+      @cast = true
+      self
+    end
+
     private
+
+    def cast_value(value, context)
+    end
+
+    def cast_value_wrapper(value, context)
+      return if !@cast
+      cast_value(value, context)
+    end
 
     def add_test(&block)
       @tests << block

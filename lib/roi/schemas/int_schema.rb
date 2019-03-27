@@ -39,5 +39,13 @@ module Roi::Schemas
       @max = max
       self
     end
+
+    private
+
+    def cast_value(value, context)
+      Pass(Integer(value))
+    rescue ArgumentError => e
+      Fail([context.error(validator_name: "#{name}.cast", message: "cannot be cast to an integer")])
+    end
   end
 end
