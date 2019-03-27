@@ -47,15 +47,32 @@ module Roi
     end
   end
 
+  class ValidationContext
+    attr_reader :path
+
+    def initialize(path)
+      @path = path || []
+    end
+
+    def error(validator_name:, message:)
+      ValidationError.new(path: path, validator_name: validator_name, message: message)
+    end
+
+    def add_path(*append_path)
+      self.class.new([*path, *append_path])
+    end
+  end
+
   module Schemas
     class BaseSchema
       def initialize
         @tests = []
       end
 
-      def validate(value)
+      def validate(value, context = nil)
+        context ||= ValidationContext.new([])
         @tests.each do |test|
-          result = test.call(value)
+          result = test.call(value, context)
           return result if !result.ok?
           value = result.value
         end
@@ -81,15 +98,14 @@ module Roi
     class StringSchema < BaseSchema
       def initialize
         super
-        add_test do |value|
+        add_test do |value, context|
           if value.is_a?(String)
             Pass(value)
           else
             Fail([
-              ValidationError.new(
-                path: ['name'],
+              context.error(
                 validator_name: 'string',
-                message: 'must be a string'
+                message: 'must be a string',
               )
             ])
           end
@@ -118,11 +134,12 @@ module Roi
 
       private
 
-      def keys_test(hash)
+      def keys_test(hash, context)
         hash.each do |key, value|
           schema = @key_to_schema[key]
           next if !schema
-          validation_result = schema.validate(value)
+          context = context.add_path(key)
+          validation_result = schema.validate(value, context)
           return validation_result if !validation_result.ok?
         end
 

@@ -106,7 +106,21 @@ describe Roi do
 
       result.should_not be_ok
       error = result.errors.first
-      error.path.should == ['name']
+      error.path.should == [:name]
+      error.validator_name.should == 'string'
+      error.message.should == 'must be a string'
+    end
+
+    it "creates an error with a path and other information" do
+      value = { first_name: 123 }
+      schema = Roi.object.keys({
+        first_name: Roi.string
+      })
+      result = schema.validate(value)
+
+      result.should_not be_ok
+      error = result.errors.first
+      error.path.should == [:first_name]
       error.validator_name.should == 'string'
       error.message.should == 'must be a string'
     end
