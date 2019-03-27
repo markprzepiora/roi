@@ -71,5 +71,17 @@ describe Roi do
       result.should be_ok
       result.value.should == { name: "Mark" }
     end
+
+    it "ignores keys missing from the validated object" do
+      value = { first_name: "Mark" }
+      schema = Roi.object.keys({
+        first_name: Roi.string,
+        last_name: Roi.string,
+      })
+      result = schema.validate(value)
+
+      result.should be_ok
+      result.value.should == { first_name: "Mark" }
+    end
   end
 end
