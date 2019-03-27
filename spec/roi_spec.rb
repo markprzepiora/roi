@@ -1,60 +1,65 @@
 describe Roi do
+  shared_examples "passing and failing values" do |schema:, passing_values: [], failing_values: []|
+    schema_string = schema
+    schema = eval(schema_string)
+
+    describe "schema #{schema_string}" do
+      passing_values.each do |input_value|
+        it "validates #{input_value.inspect}" do
+          result = schema.validate(input_value)
+          result.should be_ok
+        end
+      end
+
+      failing_values.each do |input_value|
+        it "rejects #{input_value.inspect}" do
+          result = schema.validate(input_value)
+          result.should_not be_ok
+        end
+      end
+    end
+  end
+
   it "has a version number" do
     Roi::VERSION.should_not be_nil
   end
 
   describe ".string" do
-    it "validates a simple string schema (pass)" do
-      value = "a string"
-      schema = Roi.string
-      result = schema.validate(value)
-
-      result.should be_ok
-      result.value.should == value
-    end
-
-    it "validates a simple string schema (fail)" do
-      value = nil
-      schema = Roi.string
-      result = schema.validate(value)
-
-      result.should_not be_ok
-    end
+    include_examples "passing and failing values",
+      schema: 'Roi.string',
+      passing_values: ['a string'],
+      failing_values: [nil]
   end
 
   describe ".int" do
-    it "validates a simple integer schema (pass)" do
-      value = 123
-      schema = Roi.int
-      result = schema.validate(value)
+    include_examples "passing and failing values",
+      schema: 'Roi.int',
+      passing_values: [123, 123.0],
+      failing_values: [nil, 'a string', 123.50]
+
+    it "converts floats with 0-decimal-parts to integers" do
+      result = Roi.int.validate(123.0)
 
       result.should be_ok
-      result.value.should == value
-    end
-
-    it "validates a float as long as it has a 0 decimal part" do
-      value = 123.0
-      schema = Roi.int
-      result = schema.validate(value)
-
-      result.should be_ok
-      result.value.should == 123
+      result.value.should equal(123)
       result.value.should be_a(Integer)
     end
 
     it "rejects non-integer floats" do
-      value = 1.25
-      schema = Roi.int
-      result = schema.validate(value)
-
-      result.should_not be_ok
-      result.errors.count.should == 1
+      result = Roi.int.validate(1.25)
 
       error = result.errors.first
 
       error.validator_name.should == 'int'
       error.message.should == 'must be an integer'
       error.path.should == []
+    end
+
+    describe ".min" do
+      include_examples "passing and failing values",
+        schema: 'Roi.int.min(10)',
+        passing_values: [ 10, 11 ],
+        failing_values: [ 9 ]
     end
   end
 

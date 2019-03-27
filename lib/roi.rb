@@ -167,8 +167,9 @@ module Roi
     class IntSchema < BaseSchema
       def initialize
         super
+
         add_test do |value, context|
-          if value.respond_to?(:to_i) && value.to_i == value
+          if value.respond_to?(:to_i) && value.to_i == value && value.to_i.is_a?(Integer)
             Pass(value.to_i)
           else
             Fail([
@@ -179,10 +180,23 @@ module Roi
             ])
           end
         end
+
+        add_test do |value, context|
+          if @min && value < @min
+            Fail([
+              context.error(validator_name: "#{name}.min", message: "must be >= #{@min}")
+            ])
+          end
+        end
       end
 
       def name
         'int'
+      end
+
+      def min(min)
+        @min = min
+        self
       end
     end
 
