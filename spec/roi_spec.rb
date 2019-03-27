@@ -84,4 +84,31 @@ describe Roi do
       result.value.should == { first_name: "Mark" }
     end
   end
+
+  describe "errors" do
+    it "returns an error when a validation fails" do
+      value = { name: 123 }
+      schema = Roi.object.keys({
+        name: Roi.string
+      })
+      result = schema.validate(value)
+
+      result.should_not be_ok
+      result.errors.length.should == 1
+    end
+
+    it "creates an error with a path and other information" do
+      value = { name: 123 }
+      schema = Roi.object.keys({
+        name: Roi.string
+      })
+      result = schema.validate(value)
+
+      result.should_not be_ok
+      error = result.errors.first
+      error.path.should == ['name']
+      error.validator_name.should == 'string'
+      error.message.should == 'must be a string'
+    end
+  end
 end
