@@ -12,6 +12,8 @@ module Roi::Schemas
           Fail()
         end
       end
+      add_test(&method(:keys_test))
+      add_test(&method(:required_keys_test))
     end
 
     def name
@@ -20,8 +22,6 @@ module Roi::Schemas
 
     def keys(key_to_schema)
       @key_to_schema = @key_to_schema.merge(key_to_schema)
-      add_test(&method(:keys_test))
-      add_test(&method(:required_keys_test))
       self
     end
 
