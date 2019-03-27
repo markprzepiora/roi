@@ -106,6 +106,13 @@ describe Roi do
       failing_values: [12]
   end
 
+  describe ".enum" do
+    include_examples "passing and failing values",
+      schema: 'Roi.enum("male", "female", nil)',
+      passing_values: [ 'male', 'female', nil ],
+      failing_values: [ '', 'MALE', false, true ]
+  end
+
   describe ".any" do
     include_examples "passing and failing values",
       schema: 'Roi.any',
