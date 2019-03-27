@@ -118,6 +118,13 @@ describe Roi do
       schema: 'Roi.string',
       passing_values: ['a string'],
       failing_values: [nil]
+
+    describe ".nonempty" do
+      include_examples "passing and failing values",
+        schema: 'Roi.string.nonempty',
+        passing_values: ['a string', ' '],
+        failing_values: ['']
+    end
   end
 
   describe ".int" do

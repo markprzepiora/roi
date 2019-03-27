@@ -21,5 +21,9 @@ module Roi::Schemas
     def name
       'string'
     end
+
+    def nonempty
+      invalid('')
+    end
   end
 end
