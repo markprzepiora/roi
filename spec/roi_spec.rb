@@ -281,19 +281,43 @@ describe Roi do
       Roi.object.keys({
         id: Roi.int.required.min(1),
         first_name: Roi.string.required,
+        company: Roi.object.keys({
+          name: Roi.string.required,
+        }).or_nil.required,
         accounts: Roi.array.items(Roi.object.keys({
           id: Roi.int.required,
           name: Roi.string.required,
         }))
       })
     end
-    let(:schema) { Roi.object.keys(user: user_schema) }
+    let(:schema) { Roi.object.keys(user: user_schema.required) }
 
     it "validates a complete, passing example" do
       payload = {
         user: {
           id: 123,
           first_name: "Mark",
+          company: {
+            name: "Biocyte",
+          },
+          accounts: [
+            { id: 1, name: "My account" },
+            { id: 2, name: "Another account" },
+          ],
+        },
+      }
+      result = schema.validate(payload)
+
+      result.should be_ok
+      result.value.should == payload
+    end
+
+    it "validates an alternative passing example" do
+      payload = {
+        user: {
+          id: 123,
+          first_name: "Mark",
+          company: nil,
           accounts: [
             { id: 1, name: "My account" },
             { id: 2, name: "Another account" },
@@ -311,6 +335,7 @@ describe Roi do
         user: {
           id: 123,
           first_name: "Mark",
+          company: nil,
           accounts: [
             { id: 1, name: "My account" },
             { id: nil, name: "Another account" },
@@ -324,6 +349,38 @@ describe Roi do
 
       error = result.errors.first
       error.path.should == [:user, :accounts, 1, :id]
+    end
+
+    it "gives a correct error given a missing company" do
+      payload = {
+        user: {
+          id: 123,
+          first_name: "Mark",
+          accounts: [],
+        },
+      }
+      result = schema.validate(payload)
+
+      result.should_not be_ok
+      result.errors.count.should == 1
+
+      error = result.errors.first
+      error.path.should == [:user, :company]
+    end
+
+    it "gives a correct error given a missing user" do
+      # Imagine the typo below
+      payload = {
+        users: {},
+      }
+      result = schema.validate(payload)
+
+      result.should_not be_ok
+      result.errors.count.should == 1
+
+      error = result.errors.first
+      error.path.should == [:user]
+      error.validator_name.should == 'object.required'
     end
   end
 end
