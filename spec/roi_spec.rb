@@ -122,6 +122,13 @@ describe Roi do
     end
   end
 
+  describe ".array" do
+    include_examples "passing and failing values",
+      schema: 'Roi.array',
+      passing_values: [ [], [1], [nil] ],
+      failing_values: [ {}, nil, 'a string', 123 ]
+  end
+
   describe "errors" do
     it "returns an error when a validation fails" do
       value = { name: 123 }

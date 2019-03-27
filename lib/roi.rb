@@ -13,6 +13,10 @@ module Roi
     Schemas::ObjectSchema.new
   end
 
+  def self.array
+    Schemas::ArraySchema.new
+  end
+
   class Pass < Struct.new(:value)
     def ok?
       true
@@ -264,6 +268,21 @@ module Roi
         end
 
         Pass(hash.slice(*@key_to_schema.keys))
+      end
+    end
+
+    class ArraySchema < BaseSchema
+      def initialize
+        super
+        add_test do |value|
+          if !value.is_a?(Array)
+            Fail()
+          end
+        end
+      end
+
+      def name
+        'array'
       end
     end
   end
