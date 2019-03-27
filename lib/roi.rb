@@ -1,6 +1,7 @@
 require 'roi/version'
 require 'roi/schemas/any_schema'
 require 'roi/schemas/enum_schema'
+require 'roi/schemas/boolean_schema'
 require 'roi/schemas/string_schema'
 require 'roi/schemas/int_schema'
 require 'roi/schemas/number_schema'
@@ -14,6 +15,10 @@ module Roi
 
   def self.enum(*values)
     Schemas::EnumSchema.new.values(*values)
+  end
+
+  def self.boolean
+    Schemas::BooleanSchema.new
   end
 
   def self.string
