@@ -3,6 +3,9 @@ require 'roi/schemas/base_schema'
 module Roi::Schemas
   class StringSchema < BaseSchema
     BLANK_RE = /\A[[:space:]]*\z/
+    ENCODED_BLANKS = Hash.new do |h, enc|
+      h[enc] = Regexp.new(BLANK_RE.source.encode(enc), BLANK_RE.options | Regexp::FIXEDENCODING)
+    end
 
     def initialize
       super
@@ -31,7 +34,9 @@ module Roi::Schemas
             Fail(context.error(validator_name: "#{name}.present", message: "must not be blank"))
           end
         rescue Encoding::CompatibilityError
-          Pass(value)
+          if ENCODED_BLANKS[value.encoding].match?(value)
+            Fail(context.error(validator_name: "#{name}.present", message: "must not be blank"))
+          end
         end
       end
     end

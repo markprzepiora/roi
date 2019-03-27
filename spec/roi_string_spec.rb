@@ -14,8 +14,8 @@ describe "Roi.string" do
   describe ".present" do
     include_examples "passing and failing values",
       schema: 'Roi.string.present',
-      passing_values: ['a string', ' /'],
-      failing_values: ['', ' ', " \n "]
+      passing_values: ['a string', ' /', "my value".encode("UTF-16LE")],
+      failing_values: ["", "   ", "  \n\t  \r ", "　", "\u00a0", " ".encode("UTF-16LE") ]
   end
 
   describe ".regex" do
