@@ -82,6 +82,13 @@ describe Roi do
     Roi::VERSION.should_not be_nil
   end
 
+  describe ".any" do
+    include_examples "passing and failing values",
+      schema: 'Roi.any',
+      passing_values: ['a string', 123, {}, [], false, true],
+      failing_values: [nil]
+  end
+
   describe ".string" do
     include_examples "passing and failing values",
       schema: 'Roi.string',
