@@ -1,3 +1,4 @@
+require 'set'
 require 'roi/schemas'
 require 'roi/validation_context'
 require 'roi/pass'
@@ -8,6 +9,7 @@ module Roi::Schemas
     def initialize
       @tests = []
       @required = false
+      @valids = Set.new
     end
 
     def name
@@ -16,6 +18,13 @@ module Roi::Schemas
 
     def validate(value, context = nil)
       context ||= Roi::ValidationContext.new(path: [], parent: nil)
+
+      # Matches of 'valids' values override failing tests, since the intention
+      # is to allow restrictions to be overruled with a whitelist.
+      if @valids.include?(value)
+        return Pass(value)
+      end
+
       @tests.each do |test|
         result = test.call(value, context) || Pass(value)
         return result if !result.ok?
@@ -52,6 +61,17 @@ module Roi::Schemas
 
     def required?
       !!@required
+    end
+
+    def allow(*valids)
+      valids.each do |value|
+        @valids.add(value)
+      end
+      self
+    end
+
+    def or_nil
+      allow(nil)
     end
 
     private
