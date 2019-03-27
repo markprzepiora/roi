@@ -192,7 +192,7 @@ module Roi
         end.map do |key, schema|
           context.add_path(key).error(
             validator_name: "#{schema.name}.required",
-            message: "object must have a value for key #{key}"
+            message: "object must have a value for key #{key.inspect}"
           )
         end
 

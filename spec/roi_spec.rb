@@ -93,6 +93,12 @@ describe Roi do
       result = schema.validate(value)
 
       result.should_not be_ok
+      result.errors.count.should == 1
+
+      error = result.errors.first
+      error.path.should == [:last_name]
+      error.message.should == "object must have a value for key :last_name"
+      error.validator_name.should == 'string.required'
     end
   end
 
