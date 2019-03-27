@@ -463,4 +463,85 @@ describe Roi do
       error.validator_name.should == 'object.required'
     end
   end
+
+  context "given a recursive schema" do
+    let(:schema) do
+      account_schema = Roi.object.keys({
+        name: Roi.string.required,
+      })
+      account_schema.keys({
+        child_accounts: Roi.array.items(account_schema)
+      })
+    end
+
+    it "validates a simple, non-recursive payload" do
+      payload = {
+        name: "Account 1",
+        child_accounts: [],
+      }
+      result = schema.validate(payload)
+
+      result.should be_ok
+      result.value.should == payload
+    end
+
+    it "validates a simple payload (one level of children)" do
+      payload = {
+        name: "Account 1",
+        child_accounts: [
+          {
+            name: "Account 1A",
+            child_accounts: [],
+          }
+        ],
+      }
+      result = schema.validate(payload)
+
+      result.should be_ok
+      result.value.should == payload
+    end
+
+    it "validates a simple payload (two levels of children)" do
+      payload = {
+        name: "Account 1",
+        child_accounts: [
+          {
+            name: "Account 1A",
+            child_accounts: [
+              {
+                name: "Account 1AA",
+                child_accounts: [],
+              }
+            ],
+          }
+        ],
+      }
+      result = schema.validate(payload)
+
+      result.should be_ok
+      result.value.should == payload
+    end
+
+    it "rejects a payload with an error a few levels deep" do
+      payload = {
+        name: "Account 1",
+        child_accounts: [
+          {
+            name: "Account 1A",
+            child_accounts: [
+              {
+                name: nil,
+                child_accounts: [],
+              }
+            ],
+          }
+        ],
+      }
+      result = schema.validate(payload)
+
+      result.should_not be_ok
+      result.errors.length.should == 1
+      result.errors.first.path.should == [:child_accounts, 0, :child_accounts, 0, :name]
+    end
+  end
 end
