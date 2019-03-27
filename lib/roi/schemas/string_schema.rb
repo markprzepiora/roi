@@ -30,10 +30,19 @@ module Roi::Schemas
       add_test do |value, context|
         begin
           if value.empty? || BLANK_RE.match?(value)
-            Fail([ context.error(validator_name: "string.present", message: "must not be blank") ])
+            Fail([ context.error(validator_name: "#{name}.present", message: "must not be blank") ])
           end
         rescue Encoding::CompatibilityError
           Pass(value)
+        end
+      end
+      self
+    end
+
+    def regex(regex)
+      add_test do |value, context|
+        if !regex.match(value)
+          Fail([ context.error(validator_name: "#{name}.regex", message: "must match #{regex.inspect}") ])
         end
       end
       self
