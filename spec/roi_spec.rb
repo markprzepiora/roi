@@ -83,6 +83,17 @@ describe Roi do
       result.should be_ok
       result.value.should == { first_name: "Mark" }
     end
+
+    it "requires keys marked as required" do
+      value = { first_name: "Mark" }
+      schema = Roi.object.keys({
+        first_name: Roi.string.required,
+        last_name: Roi.string.required,
+      })
+      result = schema.validate(value)
+
+      result.should_not be_ok
+    end
   end
 
   describe "errors" do

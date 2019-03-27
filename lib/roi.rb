@@ -48,10 +48,15 @@ module Roi
   end
 
   class ValidationContext
-    attr_reader :path
+    attr_reader :path, :parent
 
-    def initialize(path)
+    def initialize(path:, parent:)
       @path = path || []
+      @parent = nil
+    end
+
+    def key
+      path.last
     end
 
     def error(validator_name:, message:)
@@ -59,7 +64,11 @@ module Roi
     end
 
     def add_path(*append_path)
-      self.class.new([*path, *append_path])
+      self.class.new(path: [*path, *append_path], parent: parent)
+    end
+
+    def set_parent(new_parent)
+      self.class.new(path: path, parent: new_parent)
     end
   end
 
@@ -67,17 +76,51 @@ module Roi
     class BaseSchema
       def initialize
         @tests = []
+        @required = false
+      end
+
+      def name
+        'base'
       end
 
       def validate(value, context = nil)
-        context ||= ValidationContext.new([])
+        context ||= ValidationContext.new(path: [], parent: nil)
         @tests.each do |test|
-          result = test.call(value, context)
+          result = test.call(value, context) || Pass(value)
           return result if !result.ok?
           value = result.value
         end
 
         Pass(value)
+      end
+
+      # A schema being "required" or "optional" changes its behaviour when it
+      # applies to an object's value. By default, defined key/values can be
+      # missing from the validated object.
+      #
+      # For example:
+      #
+      #     schema = Roi.object({
+      #       name: Roi.string,
+      #     })
+      #     schema.validate({}).ok?
+      #     # => true
+      #
+      # However, this isn't always what we want. If a key must be present in
+      # the validated object, then it can be marked as required.
+      #
+      #     schema = Roi.object({
+      #       name: Roi.string.required,
+      #     })
+      #     schema.validate({}).ok?
+      #     # => false
+      def required
+        @required = true
+        self
+      end
+
+      def required?
+        !!@required
       end
 
       private
@@ -111,6 +154,10 @@ module Roi
           end
         end
       end
+
+      def name
+        'string'
+      end
     end
 
     class ObjectSchema < BaseSchema
@@ -126,13 +173,33 @@ module Roi
         end
       end
 
+      def name
+        'object'
+      end
+
       def keys(key_to_schema)
         @key_to_schema = @key_to_schema.merge(key_to_schema)
         add_test(&method(:keys_test))
+        add_test(&method(:required_keys_test))
         self
       end
 
       private
+
+      def required_keys_test(hash, context)
+        errors = @key_to_schema.select do |key, schema|
+          schema.required? && !hash.key?(key)
+        end.map do |key, schema|
+          context.add_path(key).error(
+            validator_name: "#{schema.name}.required",
+            message: "object must have a value for key #{key}"
+          )
+        end
+
+        if errors.any?
+          Fail(errors)
+        end
+      end
 
       def keys_test(hash, context)
         hash.each do |key, value|
