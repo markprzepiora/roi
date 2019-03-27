@@ -274,9 +274,14 @@ module Roi
     class ArraySchema < BaseSchema
       def initialize
         super
-        add_test do |value|
+        add_test do |value, context|
           if !value.is_a?(Array)
-            Fail()
+            Fail([
+              context.error(
+                validator_name: name,
+                message: 'must be an array',
+              )
+            ])
           end
         end
       end

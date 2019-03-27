@@ -21,6 +21,63 @@ describe Roi do
     end
   end
 
+  shared_examples "filters input value" do |schema:, input_value:, output_value:|
+    schema_string = schema
+
+    describe "schema #{schema_string} on input #{input_value.inspect}" do
+      let(:real_schema) { eval(schema_string) }
+      let(:result) { real_schema.validate(input_value) }
+
+      it "passes" do
+        result.should be_ok
+      end
+
+      it "returns the value #{output_value.inspect}" do
+        result.value.should == output_value
+      end
+
+      it "returns a #{output_value.class}" do
+        result.value.class.should == output_value.class
+      end
+    end
+  end
+
+  shared_examples "error message" do |schema:, input_value:, error_message: nil, error_path: nil, error_validator_name: nil|
+    schema_string = schema
+
+    describe "schema #{schema_string} on input #{input_value.inspect}" do
+      let(:real_schema) { eval(schema_string) }
+      let(:result) { real_schema.validate(input_value) }
+      let(:errors) { result.errors }
+
+      it "rejects" do
+        result.should_not be_ok
+      end
+
+      it "has an error" do
+        errors.should_not be_empty
+      end
+
+      if error_message
+        it "has error #{error_message.inspect}" do
+          errors.first.message.should match(error_message)
+        end
+      end
+
+      if error_path
+        it "has error path #{error_path.inspect}" do
+          errors.first.path.should == error_path
+        end
+      end
+
+      if error_validator_name
+        it "has error validator name #{error_validator_name.inspect}" do
+          errors.first.validator_name.should == error_validator_name
+        end
+      end
+    end
+  end
+
   it "has a version number" do
     Roi::VERSION.should_not be_nil
   end
@@ -38,23 +95,15 @@ describe Roi do
       passing_values: [123, 123.0],
       failing_values: [nil, 'a string', 123.50]
 
-    it "converts floats with 0-decimal-parts to integers" do
-      result = Roi.int.validate(123.0)
+    include_examples "filters input value",
+      schema: 'Roi.int',
+      input_value: 10.0,
+      output_value: 10
 
-      result.should be_ok
-      result.value.should equal(123)
-      result.value.should be_a(Integer)
-    end
-
-    it "rejects non-integer floats" do
-      result = Roi.int.validate(1.25)
-
-      error = result.errors.first
-
-      error.validator_name.should == 'int'
-      error.message.should == 'must be an integer'
-      error.path.should == []
-    end
+    include_examples "error message",
+      schema: 'Roi.int',
+      input_value: 1.25,
+      error_message: 'must be an integer'
 
     describe ".min" do
       include_examples "passing and failing values",
@@ -82,43 +131,34 @@ describe Roi do
       passing_values: [ { name: "Mark" }, {} ],
       failing_values: [ { name: 123 } ]
 
-    it "removes unspecified keys" do
-      value = { name: "Mark", age: 32 }
-      schema = Roi.object.keys({ name: Roi.string })
+    include_examples "filters input value",
+      schema: 'Roi.object.keys({ name: Roi.string })',
+      input_value: { name: "Mark", age: 32 },
+      output_value: { name: "Mark" }
 
-      result = schema.validate(value)
+    # ignores keys missing from the validated object
+    include_examples "filters input value",
+      schema: 'Roi.object.keys({ first_name: Roi.string, last_name: Roi.string })',
+      input_value: { first_name: "Mark" },
+      output_value: { first_name: "Mark" }
 
-      result.should be_ok
-      result.value.should == { name: "Mark" }
-    end
+    describe ".required" do
+      include_examples "passing and failing values",
+        schema: 'Roi.object.keys({ first_name: Roi.string.required, last_name: Roi.string.required })',
+        passing_values: [
+          { first_name: "Mark", last_name: "Przepiora" }
+        ],
+        failing_values: [
+          {},
+          { first_name: "Mark" },
+        ]
 
-    it "ignores keys missing from the validated object" do
-      value = { first_name: "Mark" }
-      schema = Roi.object.keys({
-        first_name: Roi.string,
-        last_name: Roi.string,
-      })
-      result = schema.validate(value)
-
-      result.should be_ok
-      result.value.should == { first_name: "Mark" }
-    end
-
-    it "requires keys marked as required" do
-      value = { first_name: "Mark" }
-      schema = Roi.object.keys({
-        first_name: Roi.string.required,
-        last_name: Roi.string.required,
-      })
-      result = schema.validate(value)
-
-      result.should_not be_ok
-      result.errors.count.should == 1
-
-      error = result.errors.first
-      error.path.should == [:last_name]
-      error.message.should == "object must have a value for key :last_name"
-      error.validator_name.should == 'string.required'
+      include_examples "error message",
+        schema: 'Roi.object.keys({ first_name: Roi.string.required, last_name: Roi.string.required })',
+        input_value: { first_name: "Mark" },
+        error_message: 'object must have a value for key :last_name',
+        error_path: [:last_name],
+        error_validator_name: 'string.required'
     end
   end
 
@@ -127,6 +167,12 @@ describe Roi do
       schema: 'Roi.array',
       passing_values: [ [], [1], [nil] ],
       failing_values: [ {}, nil, 'a string', 123 ]
+
+    include_examples "error message",
+      schema: 'Roi.array',
+      input_value: 123,
+      error_message: 'must be an array',
+      error_path: []
   end
 
   describe "errors" do
