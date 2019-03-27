@@ -262,8 +262,7 @@ module Roi
         hash.each do |key, value|
           schema = @key_to_schema[key]
           next if !schema
-          context = context.add_path(key)
-          validation_result = schema.validate(value, context)
+          validation_result = schema.validate(value, context.add_path(key))
           return validation_result if !validation_result.ok?
         end
 

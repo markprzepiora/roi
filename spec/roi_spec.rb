@@ -244,4 +244,55 @@ describe Roi do
       error.message.should == 'must be a string'
     end
   end
+
+  context "given a complete example (user endpoint)" do
+    let(:user_schema) do
+      Roi.object.keys({
+        id: Roi.int.required.min(1),
+        first_name: Roi.string.required,
+        accounts: Roi.array.items(Roi.object.keys({
+          id: Roi.int.required,
+          name: Roi.string.required,
+        }))
+      })
+    end
+    let(:schema) { Roi.object.keys(user: user_schema) }
+
+    it "validates a complete, passing example" do
+      payload = {
+        user: {
+          id: 123,
+          first_name: "Mark",
+          accounts: [
+            { id: 1, name: "My account" },
+            { id: 2, name: "Another account" },
+          ],
+        },
+      }
+      result = schema.validate(payload)
+
+      result.should be_ok
+      result.value.should == payload
+    end
+
+    it "gives a correct error given an invalid account" do
+      payload = {
+        user: {
+          id: 123,
+          first_name: "Mark",
+          accounts: [
+            { id: 1, name: "My account" },
+            { id: nil, name: "Another account" },
+          ],
+        },
+      }
+      result = schema.validate(payload)
+
+      result.should_not be_ok
+      result.errors.count.should == 1
+
+      error = result.errors.first
+      error.path.should == [:user, :accounts, 1, :id]
+    end
+  end
 end
