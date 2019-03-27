@@ -94,7 +94,7 @@ module Roi
           return validation_result if !validation_result.ok?
         end
 
-        Pass(hash)
+        Pass(hash.slice(*@key_to_schema.keys))
       end
     end
   end

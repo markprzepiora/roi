@@ -60,5 +60,16 @@ describe Roi do
 
       result.should_not be_ok
     end
+
+    it "removes unspecified keys" do
+      value = { name: "Mark", age: 32 }
+      schema = Roi.object.keys({
+        name: Roi.string
+      })
+      result = schema.validate(value)
+
+      result.should be_ok
+      result.value.should == { name: "Mark" }
+    end
   end
 end
