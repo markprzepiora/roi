@@ -22,6 +22,42 @@ describe Roi do
     end
   end
 
+  describe ".int" do
+    it "validates a simple integer schema (pass)" do
+      value = 123
+      schema = Roi.int
+      result = schema.validate(value)
+
+      result.should be_ok
+      result.value.should == value
+    end
+
+    it "validates a float as long as it has a 0 decimal part" do
+      value = 123.0
+      schema = Roi.int
+      result = schema.validate(value)
+
+      result.should be_ok
+      result.value.should == 123
+      result.value.should be_a(Integer)
+    end
+
+    it "rejects non-integer floats" do
+      value = 1.25
+      schema = Roi.int
+      result = schema.validate(value)
+
+      result.should_not be_ok
+      result.errors.count.should == 1
+
+      error = result.errors.first
+
+      error.validator_name.should == 'int'
+      error.message.should == 'must be an integer'
+      error.path.should == []
+    end
+  end
+
   describe ".object" do
     it "successfully validates a trivial object schema and returns the input" do
       hash = {}

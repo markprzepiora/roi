@@ -5,6 +5,10 @@ module Roi
     Schemas::StringSchema.new
   end
 
+  def self.int
+    Schemas::IntSchema.new
+  end
+
   def self.object
     Schemas::ObjectSchema.new
   end
@@ -157,6 +161,28 @@ module Roi
 
       def name
         'string'
+      end
+    end
+
+    class IntSchema < BaseSchema
+      def initialize
+        super
+        add_test do |value, context|
+          if value.respond_to?(:to_i) && value.to_i == value
+            Pass(value.to_i)
+          else
+            Fail([
+              context.error(
+                validator_name: name,
+                message: 'must be an integer',
+              )
+            ])
+          end
+        end
+      end
+
+      def name
+        'int'
       end
     end
 
