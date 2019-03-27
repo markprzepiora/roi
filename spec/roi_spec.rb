@@ -124,5 +124,21 @@ describe Roi do
       error.validator_name.should == 'string'
       error.message.should == 'must be a string'
     end
+
+    it "creates an error with a nested path" do
+      value = { user: { first_name: 123 } }
+      schema = Roi.object.keys({
+        user: Roi.object.keys({
+          first_name: Roi.string,
+        }),
+      })
+      result = schema.validate(value)
+
+      result.should_not be_ok
+      error = result.errors.first
+      error.path.should == [:user, :first_name]
+      error.validator_name.should == 'string'
+      error.message.should == 'must be a string'
+    end
   end
 end
