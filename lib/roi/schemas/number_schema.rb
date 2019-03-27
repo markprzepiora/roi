@@ -6,31 +6,20 @@ module Roi::Schemas
       super
 
       add_test do |value, context|
-        if value.is_a?(Numeric)
-          Pass(value)
-        else
-          Fail([
-            context.error(
-              validator_name: name,
-              message: 'must be a number',
-            )
-          ])
+        if !value.is_a?(Numeric)
+          Fail([ context.error(validator_name: name, message: 'must be a number') ])
         end
       end
 
       add_test do |value, context|
         if @min && value < @min
-          Fail([
-            context.error(validator_name: "#{name}.min", message: "must be >= #{@min}")
-          ])
+          Fail([ context.error(validator_name: "#{name}.min", message: "must be >= #{@min}") ])
         end
       end
 
       add_test do |value, context|
         if @max && value > @max
-          Fail([
-            context.error(validator_name: "#{name}.max", message: "must be <= #{@max}")
-          ])
+          Fail([ context.error(validator_name: "#{name}.max", message: "must be <= #{@max}") ])
         end
       end
     end

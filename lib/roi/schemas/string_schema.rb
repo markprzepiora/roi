@@ -7,12 +7,10 @@ module Roi::Schemas
     def initialize
       super
       add_test do |value, context|
-        if value.is_a?(String)
-          Pass(value)
-        else
+        if !value.is_a?(String)
           Fail([
             context.error(
-              validator_name: 'string',
+              validator_name: name,
               message: 'must be a string',
             )
           ])
@@ -32,9 +30,7 @@ module Roi::Schemas
       add_test do |value, context|
         begin
           if value.empty? || BLANK_RE.match?(value)
-            Fail([
-              context.error(validator_name: "string.present", message: "must not be blank")
-            ])
+            Fail([ context.error(validator_name: "string.present", message: "must not be blank") ])
           end
         rescue Encoding::CompatibilityError
           Pass(value)
