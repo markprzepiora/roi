@@ -8,12 +8,10 @@ module Roi::Schemas
       @valid_values = Set.new
       add_test do |value, context|
         if !@valid_values.include?(value)
-          Fail([
-            context.error(
-              validator_name: name,
-              message: "must be one of #{@valid_values.inspect}",
-            )
-          ])
+          Fail(context.error(
+            validator_name: name,
+            message: "must be one of #{@valid_values.inspect}",
+          ))
         end
       end
     end

@@ -41,12 +41,10 @@ module Roi::Schemas
         result = begin
           test.call(value, context) || Pass(value)
         rescue StandardError => e
-          Fail([
-            context.error(
-              validator_name: "uncaught_exception",
-              message: "an exception was raised: #{e.message}"
-            )
-          ])
+          Fail(context.error(
+            validator_name: "uncaught_exception",
+            message: "an exception was raised: #{e.message}"
+          ))
         end
         return result if !result.ok?
         value = result.value
@@ -157,6 +155,7 @@ module Roi::Schemas
     end
 
     def Fail(errors = [])
+      errors = Array(errors)
       Roi::Fail.new(errors)
     end
   end

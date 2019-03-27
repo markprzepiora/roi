@@ -8,12 +8,10 @@ module Roi::Schemas
       super
       add_test do |value, context|
         if !value.is_a?(String)
-          Fail([
-            context.error(
-              validator_name: name,
-              message: 'must be a string',
-            )
-          ])
+          Fail(context.error(
+            validator_name: name,
+            message: 'must be a string',
+          ))
         end
       end
     end
@@ -30,7 +28,7 @@ module Roi::Schemas
       add_test do |value, context|
         begin
           if value.empty? || BLANK_RE.match?(value)
-            Fail([ context.error(validator_name: "#{name}.present", message: "must not be blank") ])
+            Fail(context.error(validator_name: "#{name}.present", message: "must not be blank"))
           end
         rescue Encoding::CompatibilityError
           Pass(value)
@@ -41,7 +39,7 @@ module Roi::Schemas
     def regex(regex)
       add_test do |value, context|
         if !regex.match(value)
-          Fail([ context.error(validator_name: "#{name}.regex", message: "must match #{regex.inspect}") ])
+          Fail(context.error(validator_name: "#{name}.regex", message: "must match #{regex.inspect}"))
         end
       end
     end
