@@ -36,7 +36,6 @@ module Roi::Schemas
           Pass(value)
         end
       end
-      self
     end
 
     def regex(regex)
@@ -45,7 +44,6 @@ module Roi::Schemas
           Fail([ context.error(validator_name: "#{name}.regex", message: "must match #{regex.inspect}") ])
         end
       end
-      self
     end
   end
 end

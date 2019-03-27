@@ -15,7 +15,6 @@ module Roi::Schemas
             )
           ])
         end
-
       end
     end
 

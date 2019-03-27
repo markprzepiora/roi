@@ -105,7 +105,6 @@ module Roi::Schemas
           Fail([error])
         end
       end
-      self
     end
 
     def must_not_be(method_name)
@@ -121,13 +120,13 @@ module Roi::Schemas
           Fail([error])
         end
       end
-      self
     end
 
     private
 
     def add_test(&block)
       @tests << block
+      self
     end
 
     def Pass(value)

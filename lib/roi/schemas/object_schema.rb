@@ -6,9 +6,7 @@ module Roi::Schemas
       super
       @key_to_schema = {}
       add_test do |value|
-        if value.is_a?(Hash)
-          Pass(value)
-        else
+        if !value.is_a?(Hash)
           Fail()
         end
       end
