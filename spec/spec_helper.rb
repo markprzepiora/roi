@@ -1,4 +1,8 @@
 require "bundler/setup"
+
+require 'simplecov'
+SimpleCov.start
+
 require "roi"
 
 RSpec.configure do |config|
