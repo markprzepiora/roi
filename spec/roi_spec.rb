@@ -84,8 +84,8 @@ describe Roi do
 
   describe ".<schema>.allow" do
     include_examples "passing and failing values",
-      schema: 'Roi.int.min(10).allow(5)',
-      passing_values: [5, 10, 11],
+      schema: 'Roi.int.min(10).allow(5, 6)',
+      passing_values: [5, 6, 10, 11],
       failing_values: [9]
 
     include_examples "passing and failing values",
@@ -97,6 +97,13 @@ describe Roi do
       schema: 'Roi.int.min(10).or_nil',
       passing_values: [nil, 10, 11],
       failing_values: [9]
+  end
+
+  describe ".<schema>.invalid" do
+    include_examples "passing and failing values",
+      schema: 'Roi.int.min(10).invalid(12)',
+      passing_values: [10, 11, 13],
+      failing_values: [12]
   end
 
   describe ".any" do

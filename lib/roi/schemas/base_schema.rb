@@ -10,6 +10,7 @@ module Roi::Schemas
       @tests = []
       @required = false
       @valids = Set.new
+      @invalids = Set.new
     end
 
     def name
@@ -18,6 +19,16 @@ module Roi::Schemas
 
     def validate(value, context = nil)
       context ||= Roi::ValidationContext.new(path: [], parent: nil)
+
+      # Matches of 'invalids' values override all other tests (and valids),
+      # since this is meant to be a blacklist.
+      if @invalids.include?(value)
+        return Fail([
+          context.error(
+            validator_name: "#{name}.invalid",
+            message: "#{value.inspect} is invalid for this field")
+        ])
+      end
 
       # Matches of 'valids' values override failing tests, since the intention
       # is to allow restrictions to be overruled with a whitelist.
@@ -72,6 +83,13 @@ module Roi::Schemas
 
     def or_nil
       allow(nil)
+    end
+
+    def invalid(*invalids)
+      invalids.each do |value|
+        @invalids.add(value)
+      end
+      self
     end
 
     private
