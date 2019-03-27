@@ -68,6 +68,7 @@ module Roi
     class ObjectSchema < BaseSchema
       def initialize
         super
+        @keys = {}
         add_test do |value|
           if value.is_a?(Hash)
             Pass(value)
@@ -75,6 +76,10 @@ module Roi
             Fail()
           end
         end
+      end
+
+      def keys(hash)
+        self
       end
     end
   end
