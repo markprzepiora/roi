@@ -47,4 +47,14 @@ describe Roi do
     result.should be_ok
     result.value.should == value
   end
+
+  it "validates an object schema with a key (fail)" do
+    value = { name: 123 }
+    schema = Roi.object.keys({
+      name: Roi.string
+    })
+    result = schema.validate(value)
+
+    result.should_not be_ok
+  end
 end

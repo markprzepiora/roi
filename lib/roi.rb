@@ -68,7 +68,7 @@ module Roi
     class ObjectSchema < BaseSchema
       def initialize
         super
-        @keys = {}
+        @key_to_schema = {}
         add_test do |value|
           if value.is_a?(Hash)
             Pass(value)
@@ -78,8 +78,23 @@ module Roi
         end
       end
 
-      def keys(hash)
+      def keys(key_to_schema)
+        @key_to_schema = @key_to_schema.merge(key_to_schema)
+        add_test(&method(:keys_test))
         self
+      end
+
+      private
+
+      def keys_test(hash)
+        hash.each do |key, value|
+          schema = @key_to_schema[key]
+          next if !schema
+          validation_result = schema.validate(value)
+          return validation_result if !validation_result.ok?
+        end
+
+        Pass(hash)
       end
     end
   end
