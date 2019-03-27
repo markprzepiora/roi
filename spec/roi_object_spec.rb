@@ -14,6 +14,13 @@ describe "Roi.object" do
     input_value: { name: "Mark", age: 32 },
     output_value: { name: "Mark" }
 
+  include_examples "error message",
+    schema: 'Roi.object',
+    input_value: 123,
+    error_message: 'must be a Hash',
+    error_path: [],
+    error_validator_name: 'object'
+
   # ignores keys missing from the validated object
   include_examples "filters input value",
     schema: 'Roi.object.keys({ first_name: Roi.string, last_name: Roi.string })',

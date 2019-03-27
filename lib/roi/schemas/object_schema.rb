@@ -5,9 +5,9 @@ module Roi::Schemas
     def initialize
       super
       @key_to_schema = {}
-      add_test do |value|
+      add_test do |value, context|
         if !value.is_a?(Hash)
-          Fail()
+          Fail(context.error(validator_name: name, message: 'must be a Hash'))
         end
       end
       add_test(&method(:keys_test))
