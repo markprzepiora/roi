@@ -27,6 +27,10 @@ module Roi::Schemas
       self
     end
 
+    def nonempty
+      must_not_be(:empty?)
+    end
+
     private
 
     def items_test(array, context)

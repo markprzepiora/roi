@@ -245,6 +245,13 @@ describe Roi do
         error_message: 'must be an integer',
         error_path: [1]
     end
+
+    describe ".nonempty" do
+      include_examples "passing and failing values",
+        schema: 'Roi.array.nonempty',
+        passing_values: [ [1], [1,2,3] ],
+        failing_values: [ [], nil ]
+    end
   end
 
   describe "errors" do
