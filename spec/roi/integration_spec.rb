@@ -103,7 +103,7 @@ describe Roi do
 
       error = result.errors.first
       error.path.should == [:user]
-      error.validator_name.should == 'object.required'
+      error.validator_name.should == 'required'
     end
   end
 

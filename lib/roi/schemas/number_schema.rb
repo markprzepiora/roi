@@ -20,10 +20,6 @@ module Roi::Schemas
       end
     end
 
-    def name
-      'int'
-    end
-
     def min(min)
       @min = min
       self
@@ -32,6 +28,12 @@ module Roi::Schemas
     def max(max)
       @max = max
       self
+    end
+
+    private
+
+    def name
+      'int'
     end
   end
 end

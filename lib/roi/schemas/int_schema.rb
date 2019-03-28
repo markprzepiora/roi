@@ -29,10 +29,6 @@ module Roi::Schemas
       end
     end
 
-    def name
-      'int'
-    end
-
     def min(min)
       @min = min
       self
@@ -49,6 +45,10 @@ module Roi::Schemas
       Pass(Integer(value))
     rescue ArgumentError => e
       Fail(context.error(validator_name: "#{name}.cast", message: "cannot be cast to an Integer"))
+    end
+
+    def name
+      'int'
     end
   end
 end

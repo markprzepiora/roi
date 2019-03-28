@@ -43,7 +43,7 @@ describe "Roi.object" do
       input_value: { first_name: "Mark" },
       error_message: 'object must have a value for key :last_name',
       error_path: [:last_name],
-      error_validator_name: 'string.required'
+      error_validator_name: 'required'
   end
 
   describe ".require" do

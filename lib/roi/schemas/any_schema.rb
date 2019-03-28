@@ -16,6 +16,8 @@ module Roi::Schemas
       end
     end
 
+    private
+
     def name
       'any'
     end

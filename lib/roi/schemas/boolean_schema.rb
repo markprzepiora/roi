@@ -14,6 +14,8 @@ module Roi::Schemas
       end
     end
 
+    private
+
     def name
       'boolean'
     end

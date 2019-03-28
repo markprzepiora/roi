@@ -14,10 +14,6 @@ module Roi::Schemas
       add_test(&method(:cast_value_wrapper))
     end
 
-    def name
-      'base'
-    end
-
     def validate(value, context = nil)
       context ||= Roi::ValidationContext.new(path: [], parent: nil)
 

@@ -8,10 +8,6 @@ module Roi::Schemas
       add_test(&method(:items_test))
     end
 
-    def name
-      'array'
-    end
-
     def items(schema)
       @items_schema = schema
       self
@@ -37,6 +33,10 @@ module Roi::Schemas
       else
         Pass(results.map(&:value))
       end
+    end
+
+    def name
+      'array'
     end
   end
 end

@@ -12,10 +12,6 @@ module Roi::Schemas
       add_class_test(String)
     end
 
-    def name
-      'string'
-    end
-
     def nonempty
       invalid('')
     end
@@ -40,6 +36,12 @@ module Roi::Schemas
           Fail(context.error(validator_name: "#{name}.regex", message: "must match #{regex.inspect}"))
         end
       end
+    end
+
+    private
+
+    def name
+      'string'
     end
   end
 end

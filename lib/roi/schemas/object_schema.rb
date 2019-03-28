@@ -10,10 +10,6 @@ module Roi::Schemas
       add_test(&method(:required_keys_test))
     end
 
-    def name
-      'object'
-    end
-
     def keys(key_to_schema)
       @key_to_schema = @key_to_schema.merge(key_to_schema)
       self
@@ -33,7 +29,7 @@ module Roi::Schemas
         schema.required? && !hash.key?(key)
       end.map do |key, schema|
         context.add_path(key).error(
-          validator_name: "#{schema.name}.required",
+          validator_name: "required",
           message: "object must have a value for key #{key.inspect}"
         )
       end
@@ -55,6 +51,10 @@ module Roi::Schemas
       end
 
       Pass(hash.slice(*@key_to_schema.keys))
+    end
+
+    def name
+      'object'
     end
   end
 end

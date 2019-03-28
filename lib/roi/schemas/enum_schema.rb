@@ -16,13 +16,15 @@ module Roi::Schemas
       end
     end
 
-    def name
-      'enum'
-    end
-
     def values(*valid_values)
       @valid_values.merge(valid_values)
       self
+    end
+
+    private
+
+    def name
+      'enum'
     end
   end
 end

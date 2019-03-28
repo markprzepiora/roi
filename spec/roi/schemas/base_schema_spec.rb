@@ -1,8 +1,4 @@
 describe Roi::Schemas::BaseSchema do
-  it "has a name" do
-    described_class.new.name.should == 'base'
-  end
-
   describe ".allow" do
     include_examples "passing and failing values",
       schema: 'Roi.int.min(10).allow(5, 6)',
