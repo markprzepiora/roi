@@ -34,6 +34,8 @@ module Roi::Schemas
 
       if fails.any?
         Fail(fails.map(&:errors).flatten(1))
+      else
+        Pass(results.map(&:value))
       end
     end
   end

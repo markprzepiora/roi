@@ -29,4 +29,11 @@ describe "Roi.array" do
       passing_values: [ [1], [1,2,3] ],
       failing_values: [ [], nil ]
   end
+
+  describe "transforming an array item" do
+    include_examples "filters input value",
+      schema: 'Roi.array.items(Roi.int.cast)',
+      input_value: [1, "2"],
+      output_value: [1, 2]
+  end
 end
