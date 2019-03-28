@@ -79,8 +79,9 @@ module Roi
   #   result = Roi.array.items(Roi.int).validate(['1', '2', '3', '4'])
   #   result.ok # => false
   #   result.errors.first
-  #   # => #<Roi::ValidationError:0x00007fffb916fab0
-  #          @path=[0], @validator_name="int", @message="must be an Integer">
+  #   # =>
+  #   #     #<Roi::ValidationError:0x00007fffb916fab0
+  #   #      @path=[0], @validator_name="int", @message="must be an Integer">
   #
   # @return [Schemas::ArraySchema]
   def self.array
