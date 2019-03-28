@@ -56,7 +56,7 @@ module Roi::Schemas
     #
     # For example:
     #
-    #     schema = Roi.object({
+    #     schema = Roi.object.keys({
     #       name: Roi.string,
     #     })
     #     schema.validate({}).ok?
@@ -65,7 +65,7 @@ module Roi::Schemas
     # However, this isn't always what we want. If a key must be present in
     # the validated object, then it can be marked as required.
     #
-    #     schema = Roi.object({
+    #     schema = Roi.object.keys({
     #       name: Roi.string.required,
     #     })
     #     schema.validate({}).ok?
