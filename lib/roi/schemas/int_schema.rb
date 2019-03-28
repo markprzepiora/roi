@@ -6,8 +6,11 @@ module Roi::Schemas
       super
 
       add_test do |value, context|
-        if value.respond_to?(:to_i) && value.to_i == value && value.to_i.is_a?(Integer)
-          Pass(value.to_i)
+        respond_to_to_i = value.respond_to?(:to_i)
+        value_to_i = respond_to_to_i && value.to_i
+
+        if respond_to_to_i && value_to_i == value && value_to_i.is_a?(Integer)
+          Pass(value_to_i)
         else
           Fail(context.error(validator_name: name, message: 'must be an Integer'))
         end
