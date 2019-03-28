@@ -45,4 +45,11 @@ describe "Roi.object" do
       error_path: [:last_name],
       error_validator_name: 'string.required'
   end
+
+  describe ".require" do
+    include_examples "passing and failing values",
+      schema: 'Roi.object.require({ name: Roi.string })',
+      passing_values: [ { name: "Mark", age: 32 } ],
+      failing_values: [ { age: 32 } ]
+  end
 end

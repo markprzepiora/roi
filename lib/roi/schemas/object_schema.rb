@@ -23,6 +23,13 @@ module Roi::Schemas
       self
     end
 
+    def require(key_to_schema)
+      key_to_schema = key_to_schema.map do |key, schema|
+        [key, schema.required]
+      end.to_h
+      keys(key_to_schema)
+    end
+
     private
 
     def required_keys_test(hash, context)
