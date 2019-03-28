@@ -150,6 +150,15 @@ module Roi::Schemas
       self
     end
 
+    def add_class_test(klass, message = nil)
+      message ||= "must be a #{klass.name}"
+      add_test do |value, context|
+        if !value.is_a?(klass)
+          Fail(context.error(validator_name: name, message: message))
+        end
+      end
+    end
+
     def Pass(value)
       Roi::Pass.new(value)
     end

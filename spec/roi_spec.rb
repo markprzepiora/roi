@@ -50,7 +50,7 @@ describe Roi do
       error = result.errors.first
       error.path.should == [:name]
       error.validator_name.should == 'string'
-      error.message.should == 'must be a string'
+      error.message.should == 'must be a String'
     end
 
     it "creates an error with a path and other information" do
@@ -64,7 +64,7 @@ describe Roi do
       error = result.errors.first
       error.path.should == [:first_name]
       error.validator_name.should == 'string'
-      error.message.should == 'must be a string'
+      error.message.should == 'must be a String'
     end
 
     it "creates an error with a nested path" do
@@ -80,7 +80,7 @@ describe Roi do
       error = result.errors.first
       error.path.should == [:user, :first_name]
       error.validator_name.should == 'string'
-      error.message.should == 'must be a string'
+      error.message.should == 'must be a String'
     end
 
     it "does not raise an exception if a test does" do

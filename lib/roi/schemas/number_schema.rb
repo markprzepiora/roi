@@ -5,11 +5,7 @@ module Roi::Schemas
     def initialize
       super
 
-      add_test do |value, context|
-        if !value.is_a?(Numeric)
-          Fail(context.error(validator_name: name, message: 'must be a number'))
-        end
-      end
+      add_class_test(Numeric, "must be Numeric")
 
       add_test do |value, context|
         if @min && value < @min

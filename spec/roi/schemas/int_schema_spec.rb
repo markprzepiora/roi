@@ -12,7 +12,7 @@ describe "Roi.int" do
   include_examples "error message",
     schema: 'Roi.int',
     input_value: 1.25,
-    error_message: 'must be an integer'
+    error_message: 'must be an Integer'
 
   describe ".min" do
     include_examples "passing and failing values",
@@ -57,7 +57,7 @@ describe "Roi.int" do
     include_examples "error message",
       schema: 'Roi.int.cast',
       input_value: "",
-      error_message: 'cannot be cast to an integer',
+      error_message: 'cannot be cast to an Integer',
       error_path: [],
       error_validator_name: 'int.cast'
   end

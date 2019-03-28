@@ -12,7 +12,7 @@ describe "Roi.number" do
   include_examples "error message",
     schema: 'Roi.number',
     input_value: '1.25',
-    error_message: 'must be a number'
+    error_message: 'must be Numeric'
 
   describe ".min" do
     include_examples "passing and failing values",

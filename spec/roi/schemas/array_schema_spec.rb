@@ -7,7 +7,7 @@ describe "Roi.array" do
   include_examples "error message",
     schema: 'Roi.array',
     input_value: 123,
-    error_message: 'must be an array',
+    error_message: 'must be an Array',
     error_path: []
 
   describe ".items" do
@@ -19,7 +19,7 @@ describe "Roi.array" do
     include_examples "error message",
       schema: 'Roi.array.items(Roi.int)',
       input_value: [ 1, '2', 3 ],
-      error_message: 'must be an integer',
+      error_message: 'must be an Integer',
       error_path: [1]
   end
 

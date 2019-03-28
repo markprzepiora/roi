@@ -9,14 +9,7 @@ module Roi::Schemas
 
     def initialize
       super
-      add_test do |value, context|
-        if !value.is_a?(String)
-          Fail(context.error(
-            validator_name: name,
-            message: 'must be a string',
-          ))
-        end
-      end
+      add_class_test(String)
     end
 
     def name
