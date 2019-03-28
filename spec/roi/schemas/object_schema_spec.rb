@@ -52,4 +52,11 @@ describe "Roi.object" do
       passing_values: [ { name: "Mark", age: 32 } ],
       failing_values: [ { age: 32 } ]
   end
+
+  describe "transforming a property" do
+    include_examples "filters input value",
+      schema: 'Roi.object.keys({ age: Roi.int.cast })',
+      input_value: { age: "18" },
+      output_value: { age: 18 }
+  end
 end

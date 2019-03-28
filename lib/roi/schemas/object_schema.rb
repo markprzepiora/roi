@@ -43,12 +43,15 @@ module Roi::Schemas
       end
     end
 
-    def keys_test(hash, context)
+    def keys_test(input_hash, context)
+      hash = input_hash.dup
+
       hash.each do |key, value|
         schema = @key_to_schema[key]
         next if !schema
         validation_result = schema.validate(value, context.add_path(key))
         return validation_result if !validation_result.ok?
+        hash[key] = validation_result.value
       end
 
       Pass(hash.slice(*@key_to_schema.keys))
