@@ -16,7 +16,7 @@ module Roi::Schemas
 
     # @return [Roi::ValidationResults::Pass, Roi::ValidationResults::Fail]
     def validate(value, context = nil)
-      context ||= Roi::ValidationContext.new(path: [], parent: nil)
+      context ||= Roi::ValidationContext.new(path: [])
 
       # Matches of 'invalids' values override all other tests (and valids),
       # since this is meant to be a blacklist.
