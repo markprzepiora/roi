@@ -1,8 +1,8 @@
 require 'set'
 require 'roi/schemas'
 require 'roi/validation_context'
-require 'roi/pass'
-require 'roi/fail'
+require 'roi/validation_results/pass'
+require 'roi/validation_results/fail'
 
 module Roi::Schemas
   class BaseSchema
@@ -14,7 +14,7 @@ module Roi::Schemas
       add_test(&method(:cast_value_wrapper))
     end
 
-    # @return [Roi::Pass, Roi::Fail]
+    # @return [Roi::ValidationResults::Pass, Roi::ValidationResults::Fail]
     def validate(value, context = nil)
       context ||= Roi::ValidationContext.new(path: [], parent: nil)
 
@@ -157,12 +157,12 @@ module Roi::Schemas
     end
 
     def Pass(value)
-      Roi::Pass.new(value)
+      Roi::ValidationResults::Pass.new(value)
     end
 
     def Fail(errors = [])
       errors = Array(errors)
-      Roi::Fail.new(errors)
+      Roi::ValidationResults::Fail.new(errors)
     end
   end
 end

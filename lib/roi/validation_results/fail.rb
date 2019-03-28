@@ -1,6 +1,6 @@
-require 'roi'
+require 'roi/validation_results'
 
-class Roi::Fail < Struct.new(:errors)
+class Roi::ValidationResults::Fail < Struct.new(:errors)
   def initialize(*args)
     super
     self.errors ||= []
