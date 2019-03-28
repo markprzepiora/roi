@@ -24,4 +24,11 @@ describe "Roi.string" do
       passing_values: ['foo', 'BAR', 'bAz', ''],
       failing_values: [ '0', '*' ]
   end
+
+  describe ".digits" do
+    include_examples "passing and failing values",
+      schema: 'Roi.string.digits',
+      passing_values: [ '0', '1', '123' ],
+      failing_values: [ '-0', '', '1.5' ]
+  end
 end

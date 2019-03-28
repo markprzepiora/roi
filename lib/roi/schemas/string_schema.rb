@@ -63,6 +63,16 @@ module Roi::Schemas
       end
     end
 
+    # String must be composed entirely of digits. Useful for specifying numeric IDs.
+    #
+    # @example
+    #   Roi.string.digits.validate("123").ok? # => true
+    #   Roi.string.digits.validate("-1").ok? # => false
+    #   Roi.string.digits.validate("123-foo").ok? # => false
+    def digits
+      regex(/\A\d+\z/)
+    end
+
     private
 
     def name
