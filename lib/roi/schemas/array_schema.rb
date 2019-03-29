@@ -5,6 +5,7 @@ module Roi::Schemas
     def initialize
       super
       @unique = false
+      @unique_remove_duplicates = false
       @items_schema = nil
       add_class_test(Array, "must be an Array")
       add_test(&method(:items_test))
@@ -20,8 +21,9 @@ module Roi::Schemas
       must_not_be(:empty?)
     end
 
-    def unique
+    def unique(remove_duplicates: false)
       @unique = true
+      @unique_remove_duplicates = remove_duplicates
       self
     end
 
@@ -46,7 +48,11 @@ module Roi::Schemas
     def uniqueness_test(array, context)
       return if !@unique
 
-      if Set.new(array).length != array.length
+      unique_element_count = Set.new(array).length
+
+      if @unique_remove_duplicates && unique_element_count != array.length
+        Pass(array.uniq)
+      elsif unique_element_count != array.length
         Fail(context.error(validator_name: "#{name}.unique", message: "elements must be unique"))
       end
     end

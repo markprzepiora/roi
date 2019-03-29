@@ -43,4 +43,11 @@ describe "Roi.array" do
       passing_values: [ [], [1], [1, 2], [1, '1'] ],
       failing_values: [ [1, 1], ['1', '2', '1'], ['a', 'a', 'a'] ]
   end
+
+  describe ".unique(remove_duplicates: true)" do
+    include_examples "filters input value",
+      schema: 'Roi.array.unique(remove_duplicates: true)',
+      input_value: [1, '1', 1, 2],
+      output_value: [1, '1', 2]
+  end
 end
