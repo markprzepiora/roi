@@ -110,6 +110,16 @@ module Roi::Schemas
       self
     end
 
+    def min_length(min_length)
+      @min_length = min_length
+      self
+    end
+
+    def max_length(max_length)
+      @max_length = max_length
+      self
+    end
+
     private
 
     def name
