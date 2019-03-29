@@ -2,13 +2,11 @@ require 'roi'
 
 class Roi::Test
   extend Forwardable
-  attr_reader :name, :proc, :fail_early, :pass_early
+  attr_reader :name, :proc
 
-  def initialize(name, proc, fail_early: false, pass_early: false)
+  def initialize(name, proc)
     @name = name
     @proc = proc
-    @fail_early = fail_early
-    @pass_early = pass_early
   end
 
   def in_context(schema, context)
