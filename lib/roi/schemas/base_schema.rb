@@ -3,6 +3,7 @@ require 'roi/schemas'
 require 'roi/validation_context'
 require 'roi/validation_results/pass'
 require 'roi/validation_results/fail'
+require 'roi/test'
 
 module Roi::Schemas
   class BaseSchema
@@ -143,7 +144,7 @@ module Roi::Schemas
     end
 
     def add_test(&block)
-      @tests << block
+      @tests << Roi::Test.new(block)
       self
     end
 
