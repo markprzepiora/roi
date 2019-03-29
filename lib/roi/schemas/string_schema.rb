@@ -14,6 +14,24 @@ module Roi::Schemas
     def initialize
       super
       add_class_test(String)
+
+      add_test do |value, context|
+        if @min_length && value.length < @min_length
+          Fail(context.error(
+            validator_name: "#{name}.min_length",
+            message: "length must be ≥ #{@min_length}"
+          ))
+        end
+      end
+
+      add_test do |value, context|
+        if @max_length && value.length > @max_length
+          Fail(context.error(
+            validator_name: "#{name}.max_length",
+            message: "length must be ≤ #{@max_length}"
+          ))
+        end
+      end
     end
 
     # Reject empty strings.
@@ -71,6 +89,25 @@ module Roi::Schemas
     #   Roi.string.digits.validate("123-foo").ok? # => false
     def digits
       regex(/\A\d+\z/)
+    end
+
+    # String must be a certain length.
+    #
+    # May be an exact length, or a range.
+    #
+    # @param int_or_range [Integer, Range<Integer>]
+    def length(int_or_range)
+      case int_or_range
+      when Integer
+        @min_length = int_or_range
+        @max_length = int_or_range
+      when Range
+        @min_length = int_or_range.min
+        @max_length = int_or_range.max
+      else
+        fail ArgumentError, "Argument must be an Integer or a Range"
+      end
+      self
     end
 
     private

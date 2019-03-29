@@ -31,4 +31,23 @@ describe "Roi.string" do
       passing_values: [ '0', '1', '123' ],
       failing_values: [ '-0', '', '1.5' ]
   end
+
+  describe ".length(Integer)" do
+    include_examples "passing and failing values",
+      schema: 'Roi.string.length(5)',
+      passing_values: [ '12345', '☃☃☃☃☃' ],
+      failing_values: [ '', '1', '1234', '123456' ]
+  end
+
+  describe ".length(Range)" do
+    include_examples "passing and failing values",
+      schema: 'Roi.string.length(1..5)',
+      passing_values: [ '1', '12345', ],
+      failing_values: [ '', '123456' ]
+
+    include_examples "passing and failing values",
+      schema: 'Roi.string.length(1...5)',
+      passing_values: [ '1', '1234', ],
+      failing_values: [ '', '12345' ]
+  end
 end
