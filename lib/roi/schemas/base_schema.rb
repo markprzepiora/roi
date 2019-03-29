@@ -37,7 +37,7 @@ module Roi::Schemas
 
       @tests.each do |test|
         result = begin
-          test.call(value, context) || Pass(value)
+          test.in_context(self, context).call(value, context) || Pass(value)
         rescue StandardError => e
           Fail(context.error(
             validator_name: "uncaught_exception",
@@ -143,8 +143,8 @@ module Roi::Schemas
       cast_value(value, context)
     end
 
-    def add_test(&block)
-      @tests << Roi::Test.new(block)
+    def add_test(name = nil, fail_early: false, pass_early: false, &block)
+      @tests << Roi::Test.new(name, block, fail_early: fail_early, pass_early: pass_early)
       self
     end
 
