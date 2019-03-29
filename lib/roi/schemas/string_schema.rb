@@ -99,11 +99,11 @@ module Roi::Schemas
     def length(int_or_range)
       case int_or_range
       when Integer
-        @min_length = int_or_range
-        @max_length = int_or_range
+        min_length(int_or_range)
+        max_length(int_or_range)
       when Range
-        @min_length = int_or_range.min
-        @max_length = int_or_range.max
+        min_length(int_or_range.min)
+        max_length(int_or_range.max)
       else
         fail ArgumentError, "Argument must be an Integer or a Range"
       end
@@ -111,11 +111,19 @@ module Roi::Schemas
     end
 
     def min_length(min_length)
+      if !min_length.is_a?(Integer)
+        fail ArgumentError, "Argument must be an Integer"
+      end
+
       @min_length = min_length
       self
     end
 
     def max_length(max_length)
+      if !max_length.is_a?(Integer)
+        fail ArgumentError, "Argument must be an Integer"
+      end
+
       @max_length = max_length
       self
     end

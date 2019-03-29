@@ -49,6 +49,18 @@ describe "Roi.string" do
       schema: 'Roi.string.length(1...5)',
       passing_values: [ '1', '1234', ],
       failing_values: [ '', '12345' ]
+
+    it "fails when a non-integer, non-range is specified" do
+      expect {
+        Roi.string.length('a')
+      }.to raise_error(/must be an integer/i)
+    end
+
+    it "fails when a non-integer range is specified" do
+      expect {
+        Roi.string.length('a'..'z')
+      }.to raise_error(/must be an integer/i)
+    end
   end
 
   describe ".min_length(Integer)" do
@@ -56,6 +68,12 @@ describe "Roi.string" do
       schema: 'Roi.string.min_length(5)',
       passing_values: [ '12345', '123456' ],
       failing_values: [ '', '1', '1234' ]
+
+    it "fails when a non-integer is specified" do
+      expect {
+        Roi.string.min_length('a')
+      }.to raise_error(/must be an integer/i)
+    end
   end
 
   describe ".max_length(Integer)" do
@@ -63,5 +81,11 @@ describe "Roi.string" do
       schema: 'Roi.string.max_length(5)',
       passing_values: [ '', '1', '1234', '12345' ],
       failing_values: [ '123456' ]
+
+    it "fails when a non-integer is specified" do
+      expect {
+        Roi.string.max_length('a')
+      }.to raise_error(/must be an integer/i)
+    end
   end
 end
