@@ -5,6 +5,7 @@ module Roi::Schemas
     def initialize
       super
       @unique = false
+      @items_schema = nil
       add_class_test(Array, "must be an Array")
       add_test(&method(:items_test))
       add_test(&method(:uniqueness_test))
