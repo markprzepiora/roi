@@ -36,4 +36,11 @@ describe "Roi.array" do
       input_value: [1, "2"],
       output_value: [1, 2]
   end
+
+  describe ".unique" do
+    include_examples "passing and failing values",
+      schema: 'Roi.array.unique',
+      passing_values: [ [], [1], [1, 2], [1, '1'] ],
+      failing_values: [ [1, 1], ['1', '2', '1'], ['a', 'a', 'a'] ]
+  end
 end
