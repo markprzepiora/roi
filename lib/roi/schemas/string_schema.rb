@@ -1,4 +1,7 @@
 require 'roi/schemas/base_schema'
+require 'roi/support'
+
+using Roi::Support
 
 module Roi::Schemas
   class StringSchema < BaseSchema
