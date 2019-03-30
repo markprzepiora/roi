@@ -4,10 +4,6 @@ cache:
   - bundler
   - directories:
      - /home/travis/.rvm/
-before_install:
-  - gem uninstall -v '>= 2' -i $(rvm gemdir)@global -ax bundler || true
-  - gem uninstall -v '>= 2' -ax bundler || true
-  - gem install bundler -v '< 2'
 matrix:
   include:
   - rvm: ruby-head
@@ -27,4 +23,4 @@ matrix:
   - rvm: 2.6
     gemfile: Gemfile
 
-script: bundle exec rspec spec
+script: bundle exec rspec -fd
