@@ -2,7 +2,10 @@ require "bundler/setup"
 
 require 'pry'
 require 'simplecov'
-SimpleCov.start
+SimpleCov.start do
+  add_filter "/spec/"
+  add_filter "lib/roi/support.rb"
+end
 
 require "roi"
 
