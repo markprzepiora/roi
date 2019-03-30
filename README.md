@@ -1,8 +1,6 @@
 # Roi
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/roi`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Roi is a spiritual-reimplementation of [joi](https://github.com/hapijs/joi) in Ruby.
 
 ## Installation
 
@@ -16,13 +14,59 @@ And then execute:
 
     $ bundle
 
-Or install it yourself as:
+## Basic Usage
 
-    $ gem install roi
+Complete example (valid object):
 
-## Usage
+```ruby
+update_user_schema = Roi.define do
+  object({
+    email: string.email,
+    name: string.present,
+    birth_year: int.min(1900).max(2013),
+    receive_emails: array(enum('transactional', 'marketing')).unique,
+    company: object({
+      name: string.present,
+    }).or_nil,
+  })
+end
 
-TODO: Write usage instructions here
+passing_payload_1 = {
+  email: "foo@example.com",
+  name: "Foo Barr",
+  birth_year: 1985,
+  receive_emails: ['transactional'],
+  company: { name: "ACME Co." },
+  an_extra_field: 123,
+}
+
+update_user_schema.validate(passing_payload_1).ok? # => true
+update_user_schema.validate(passing_payload_1).value
+# => {
+#   email: "foo@example.com",
+#   name: "Foo Barr",
+#   birth_year: 1985,
+#   receive_emails: ['transactional'],
+#   company: { name: "ACME Co." },
+# }
+```
+
+And an invalid object:
+
+```ruby
+failing_payload_1 = {
+  company: { name: nil },
+}
+update_user_schema.validate(failing_payload_1).ok? # => false
+update_user_schema.validate(failing_payload_1).errors.as_json
+# => [
+#      {
+#        validator_name: 'string',
+#        path: ['company', 'name'],
+#        message: 'must be a String',
+#      }
+#    ]
+```
 
 ## Development
 
@@ -32,7 +76,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/roi. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/markprzepiora/roi. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 
@@ -40,4 +84,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the Roi project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/roi/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the Roi project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/markprzepiora/roi/blob/master/CODE_OF_CONDUCT.md).
