@@ -54,29 +54,16 @@ describe 'Schema errors' do
     error.message.should == 'must be a String'
   end
 
-  it "does not raise an exception if a test does" do
+  it "raises uncaught exceptions from within tests" do
     schema_class = Class.new(Roi::Schemas::StringSchema) do
       def initialize
         super
-        add_test{ fail "this should not be raised" }
+        add_test{ fail "this should be re-raised" }
       end
     end
 
     expect {
       schema_class.new.validate("A value")
-    }.not_to raise_error
-  end
-
-  it "catches the exception and includes the message in the error" do
-    schema_class = Class.new(Roi::Schemas::StringSchema) do
-      def initialize
-        super
-        add_test{ fail "this should not be raised" }
-      end
-    end
-
-    res = schema_class.new.validate("A value")
-    res.errors.length.should == 1
-    res.errors.first.message.should == "an exception was raised: this should not be raised"
+    }.to raise_error("this should be re-raised")
   end
 end

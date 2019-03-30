@@ -23,11 +23,7 @@ module Roi::Schemas
 
       @tests.each do |test|
         test_context = context.set_validator_name(test.name)
-        result = begin
-          test.call(value, test_context) || Pass(value)
-        rescue StandardError => e
-          Fail(test_context.error("an exception was raised: #{e.message}"))
-        end
+        result = test.call(value, test_context) || Pass(value)
 
         return result if !result.ok? || result.pass_early?
 
@@ -127,7 +123,7 @@ module Roi::Schemas
       # Matches of 'invalids' values override all other tests (and valids),
       # since this is meant to be a blacklist.
       if @invalids.include?(value)
-        Fail(error("#{value.inspect} is invalid for this field"))
+        Fail(context.error("#{value.inspect} is invalid for this field"))
       end
     end
 

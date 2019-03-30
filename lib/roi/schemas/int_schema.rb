@@ -43,7 +43,7 @@ module Roi::Schemas
 
     def cast_value(value, context)
       Pass(Integer(value))
-    rescue ArgumentError => e
+    rescue ArgumentError, TypeError => e
       Fail(context.error("cannot be cast to an Integer"))
     end
 
