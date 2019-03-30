@@ -12,17 +12,19 @@ matrix:
   include:
   - rvm: ruby-head
     gemfile: Gemfile
-  - rvm: 2.5
-    gemfile: Gemfile
-  - rvm: 2.4
-    gemfile: Gemfile
-  - rvm: 2.3
-    gemfile: Gemfile
-  - rvm: 2.2
+  - rvm: 2.0
     gemfile: Gemfile
   - rvm: 2.1
     gemfile: Gemfile
-  - rvm: 2.0
+  - rvm: 2.2
+    gemfile: Gemfile
+  - rvm: 2.3
+    gemfile: Gemfile
+  - rvm: 2.4
+    gemfile: Gemfile
+  - rvm: 2.5
+    gemfile: Gemfile
+  - rvm: 2.6
     gemfile: Gemfile
 
 script: bundle exec rspec spec
