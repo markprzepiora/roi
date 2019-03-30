@@ -12,43 +12,28 @@ module Roi::Schemas
       @required = false
       @valids = Set.new
       @invalids = Set.new
-      add_test(&method(:cast_value_wrapper))
+      add_test("#{name}.invalid", &method(:test_invalids))
+      add_test("#{name}.valid", &method(:test_valids))
+      add_test("#{name}.cast", &method(:test_cast_value_wrapper))
     end
 
     # @return [Roi::ValidationResults::Pass, Roi::ValidationResults::Fail]
     def validate(value, context = nil)
       context ||= Roi::ValidationContext.new(path: [])
 
-      # Matches of 'invalids' values override all other tests (and valids),
-      # since this is meant to be a blacklist.
-      if @invalids.include?(value)
-        return Fail([
-          context.error(
-            validator_name: "#{name}.invalid",
-            message: "#{value.inspect} is invalid for this field")
-        ])
-      end
-
-      # Matches of 'valids' values override failing tests, since the intention
-      # is to allow restrictions to be overruled with a whitelist.
-      if @valids.include?(value)
-        return Pass(value)
-      end
-
       @tests.each do |test|
-        result = begin
-          test.call(value, context) || Pass(value)
-        rescue StandardError => e
-          Fail(context.error(
-            validator_name: "uncaught_exception",
-            message: "an exception was raised: #{e.message}"
-          ))
-        end
-        return result if !result.ok?
+        test_context = context.set_validator_name(test.name)
+        result = test.call(value, test_context) || Pass(value)
+
+        return result if !result.ok? || result.pass_early?
+
         value = result.value
       end
 
       Pass(value)
+    end
+
+    def run_test(test, value, context)
     end
 
     # A schema being "required" or "optional" changes its behaviour when it
@@ -99,10 +84,8 @@ module Roi::Schemas
     end
 
     def must_be(method_name)
-      add_test do |value, context|
-        error = context.error(
-          validator_name: "#{name}.must_be",
-          message: "##{method_name} must be true")
+      add_test('must_be') do |value, context|
+        error = context.error("##{method_name} must be true")
         begin
           if !value.respond_to?(method_name) || !value.public_send(method_name)
             Fail([error])
@@ -114,10 +97,8 @@ module Roi::Schemas
     end
 
     def must_not_be(method_name)
-      add_test do |value, context|
-        error = context.error(
-          validator_name: "#{name}.must_not_be",
-          message: "##{method_name} must be false")
+      add_test('must_not_be') do |value, context|
+        error = context.error("##{method_name} must be false")
         begin
           if value.respond_to?(method_name) && value.public_send(method_name)
             Fail([error])
@@ -138,27 +119,43 @@ module Roi::Schemas
     def cast_value(value, context)
     end
 
-    def cast_value_wrapper(value, context)
+    def test_invalids(value, context)
+      # Matches of 'invalids' values override all other tests (and valids),
+      # since this is meant to be a blacklist.
+      if @invalids.include?(value)
+        Fail(context.error("#{value.inspect} is invalid for this field"))
+      end
+    end
+
+    def test_valids(value, context)
+      # Matches of 'valids' values override failing tests, since the intention
+      # is to allow restrictions to be overruled with a whitelist.
+      if @valids.include?(value)
+        Pass(value, pass_early: true)
+      end
+    end
+
+    def test_cast_value_wrapper(value, context)
       return if !@cast
       cast_value(value, context)
     end
 
-    def add_test(&block)
-      @tests << Roi::Test.new(block)
+    def add_test(test_name = name, &block)
+      @tests << Roi::Test.new(test_name, block)
       self
     end
 
     def add_class_test(klass, message = nil)
       message ||= "must be a #{klass.name}"
-      add_test do |value, context|
+      add_test(name) do |value, context|
         if !value.is_a?(klass)
-          Fail(context.error(validator_name: name, message: message))
+          Fail(context.error(message))
         end
       end
     end
 
-    def Pass(value)
-      Roi::ValidationResults::Pass.new(value)
+    def Pass(*args)
+      Roi::ValidationResults::Pass.new(*args)
     end
 
     def Fail(errors = [])

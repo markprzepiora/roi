@@ -6,8 +6,8 @@ module Roi::Schemas
       super
       @key_to_schema = {}
       add_class_test(Hash)
-      add_test(&method(:keys_test))
-      add_test(&method(:required_keys_test))
+      add_test('object.keys', &method(:keys_test))
+      add_test('required', &method(:required_keys_test))
     end
 
     def keys(key_to_schema)
@@ -28,10 +28,7 @@ module Roi::Schemas
       errors = @key_to_schema.select do |key, schema|
         schema.required? && !hash.key?(key)
       end.map do |key, schema|
-        context.add_path(key).error(
-          validator_name: "required",
-          message: "object must have a value for key #{key.inspect}"
-        )
+        context.add_path(key).error("object must have a value for key #{key.inspect}")
       end
 
       if errors.any?

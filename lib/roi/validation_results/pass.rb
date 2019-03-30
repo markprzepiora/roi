@@ -6,8 +6,13 @@ class Roi::ValidationResults::Pass
   # @return [Object]
   attr_reader :value
 
-  def initialize(value)
+  # @return [Boolean]
+  attr_reader :pass_early
+  alias_method :pass_early?, :pass_early
+
+  def initialize(value, pass_early: false)
     @value = value
+    @pass_early = pass_early
   end
 
   # @return true
