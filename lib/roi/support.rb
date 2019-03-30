@@ -12,6 +12,14 @@ module Roi::Support
     end
   end
 
+  refine Array do
+    if !Array.instance_methods.include?(:to_h)
+      def to_h
+        Hash[*flatten(1)]
+      end
+    end
+  end
+
   refine Regexp do
     def match?(string, pos = 0)
       !!match(string, pos)
