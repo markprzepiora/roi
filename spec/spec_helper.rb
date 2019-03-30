@@ -63,8 +63,9 @@ shared_examples "filters input value" do |schema: :__NONE__, input_value: :__NON
   end
 end
 
-shared_examples "error message" do |schema: nil, input_value:, error_message: nil, error_path: nil, error_validator_name: nil|
-  fail ArgumentError, "must specify a schema" if !schema
+shared_examples "error message" do |schema: :__NONE__, input_value: :__NONE__, error_message: nil, error_path: nil, error_validator_name: nil|
+  fail ArgumentError, "must specify a schema" if schema == :__NONE__
+  fail ArgumentError, "must specify an input_value" if input_value == :__NONE__
 
   schema_string = schema
 
