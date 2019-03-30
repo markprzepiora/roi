@@ -14,7 +14,9 @@ RSpec.configure do |config|
   end
 end
 
-shared_examples "passing and failing values" do |schema:, passing_values: [], failing_values: []|
+shared_examples "passing and failing values" do |schema: nil, passing_values: [], failing_values: []|
+  fail ArgumentError, "must specify a schema" if !schema
+
   schema_string = schema
 
   describe "schema #{schema_string}" do
@@ -36,7 +38,11 @@ shared_examples "passing and failing values" do |schema:, passing_values: [], fa
   end
 end
 
-shared_examples "filters input value" do |schema:, input_value:, output_value:|
+shared_examples "filters input value" do |schema: :__NONE__, input_value: :__NONE__, output_value: :__NONE__|
+  fail ArgumentError, "must specify a schema" if schema == :__NONE__
+  fail ArgumentError, "must specify an input_value" if input_value == :__NONE__
+  fail ArgumentError, "must specify an output_value" if output_value == :__NONE__
+
   schema_string = schema
 
   describe "schema #{schema_string} on input #{input_value.inspect}" do
@@ -57,7 +63,9 @@ shared_examples "filters input value" do |schema:, input_value:, output_value:|
   end
 end
 
-shared_examples "error message" do |schema:, input_value:, error_message: nil, error_path: nil, error_validator_name: nil|
+shared_examples "error message" do |schema: nil, input_value:, error_message: nil, error_path: nil, error_validator_name: nil|
+  fail ArgumentError, "must specify a schema" if !schema
+
   schema_string = schema
 
   describe "schema #{schema_string} on input #{input_value.inspect}" do
