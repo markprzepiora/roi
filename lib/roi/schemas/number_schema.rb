@@ -7,15 +7,15 @@ module Roi::Schemas
 
       add_class_test(Numeric, "must be Numeric")
 
-      add_test do |value, context|
+      add_test('number.min') do |value, context|
         if @min && value < @min
-          Fail(context.error(validator_name: "#{name}.min", message: "must be >= #{@min}"))
+          Fail(context.error("must be >= #{@min}"))
         end
       end
 
-      add_test do |value, context|
+      add_test('number.max') do |value, context|
         if @max && value > @max
-          Fail(context.error(validator_name: "#{name}.max", message: "must be <= #{@max}"))
+          Fail(context.error("must be <= #{@max}"))
         end
       end
     end

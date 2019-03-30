@@ -4,14 +4,9 @@ module Roi::Schemas
   class AnySchema < BaseSchema
     def initialize
       super
-      add_test do |value, context|
+      add_test('any') do |value, context|
         if value.nil?
-          Fail([
-            context.error(
-              validator_name: name,
-              message: 'must not be nil',
-            )
-          ])
+          Fail(context.error('must not be nil'))
         end
       end
     end

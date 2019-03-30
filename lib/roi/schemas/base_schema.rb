@@ -22,13 +22,11 @@ module Roi::Schemas
       context ||= Roi::ValidationContext.new(path: [])
 
       @tests.each do |test|
+        test_context = context.set_validator_name(test.name)
         result = begin
-          test.in_context(self, context).call(value, context) || Pass(value)
+          test.call(value, test_context) || Pass(value)
         rescue StandardError => e
-          Fail(context.error(
-            validator_name: "uncaught_exception",
-            message: "an exception was raised: #{e.message}"
-          ))
+          Fail(test_context.error("an exception was raised: #{e.message}"))
         end
 
         return result if !result.ok? || result.pass_early?
@@ -37,6 +35,9 @@ module Roi::Schemas
       end
 
       Pass(value)
+    end
+
+    def run_test(test, value, context)
     end
 
     # A schema being "required" or "optional" changes its behaviour when it
@@ -87,10 +88,8 @@ module Roi::Schemas
     end
 
     def must_be(method_name)
-      add_test do |value, context|
-        error = context.error(
-          validator_name: "#{name}.must_be",
-          message: "##{method_name} must be true")
+      add_test('must_be') do |value, context|
+        error = context.error("##{method_name} must be true")
         begin
           if !value.respond_to?(method_name) || !value.public_send(method_name)
             Fail([error])
@@ -102,10 +101,8 @@ module Roi::Schemas
     end
 
     def must_not_be(method_name)
-      add_test do |value, context|
-        error = context.error(
-          validator_name: "#{name}.must_not_be",
-          message: "##{method_name} must be false")
+      add_test('must_not_be') do |value, context|
+        error = context.error("##{method_name} must be false")
         begin
           if value.respond_to?(method_name) && value.public_send(method_name)
             Fail([error])
@@ -130,9 +127,7 @@ module Roi::Schemas
       # Matches of 'invalids' values override all other tests (and valids),
       # since this is meant to be a blacklist.
       if @invalids.include?(value)
-        Fail(context.error(
-          validator_name: "#{name}.invalid",
-          message: "#{value.inspect} is invalid for this field"))
+        Fail(error("#{value.inspect} is invalid for this field"))
       end
     end
 
@@ -140,7 +135,7 @@ module Roi::Schemas
       # Matches of 'valids' values override failing tests, since the intention
       # is to allow restrictions to be overruled with a whitelist.
       if @valids.include?(value)
-        return Pass(value, pass_early: true)
+        Pass(value, pass_early: true)
       end
     end
 
@@ -149,16 +144,16 @@ module Roi::Schemas
       cast_value(value, context)
     end
 
-    def add_test(name = nil, &block)
-      @tests << Roi::Test.new(name, block)
+    def add_test(test_name = name, &block)
+      @tests << Roi::Test.new(test_name, block)
       self
     end
 
     def add_class_test(klass, message = nil)
       message ||= "must be a #{klass.name}"
-      add_test do |value, context|
+      add_test(name) do |value, context|
         if !value.is_a?(klass)
-          Fail(context.error(validator_name: name, message: message))
+          Fail(context.error(message))
         end
       end
     end

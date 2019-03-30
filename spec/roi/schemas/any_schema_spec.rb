@@ -21,7 +21,7 @@ describe "Roi.any" do
       input_value: FailingEmpty.new,
       error_message: '#empty? must be true',
       error_path: [],
-      error_validator_name: 'any.must_be'
+      error_validator_name: 'must_be'
   end
 
   describe ".must_not_be" do
@@ -35,6 +35,6 @@ describe "Roi.any" do
       input_value: FailingEmpty.new,
       error_message: '#empty? must be false',
       error_path: [],
-      error_validator_name: 'any.must_not_be'
+      error_validator_name: 'must_not_be'
   end
 end

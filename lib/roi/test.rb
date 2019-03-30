@@ -25,8 +25,8 @@ class Roi::Test
       super(schema_instance)
     end
 
-    def call(*args, &block)
-      @__test__.call(*args, &block)
+    def call(*args)
+      instance_exec(*args, &@__test__.proc)
     end
 
     def error(message)

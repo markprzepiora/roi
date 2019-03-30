@@ -15,7 +15,7 @@ module Roi::Schemas
       super
       add_class_test(String)
 
-      add_test do |value, context|
+      add_test('string.min_length') do |value, context|
         if @min_length && value.length < @min_length
           Fail(context.error(
             validator_name: "#{name}.min_length",
@@ -24,7 +24,7 @@ module Roi::Schemas
         end
       end
 
-      add_test do |value, context|
+      add_test('string.max_length') do |value, context|
         if @max_length && value.length > @max_length
           Fail(context.error(
             validator_name: "#{name}.max_length",
@@ -53,14 +53,14 @@ module Roi::Schemas
     #
     # @return self
     def present
-      add_test do |value, context|
+      add_test('string.present') do |value, context|
         begin
           if value.empty? || BLANK_RE.match?(value)
-            Fail(context.error(validator_name: "#{name}.present", message: "must not be blank"))
+            Fail(context.error("must not be blank"))
           end
         rescue Encoding::CompatibilityError
           if ENCODED_BLANKS[value.encoding].match?(value)
-            Fail(context.error(validator_name: "#{name}.present", message: "must not be blank"))
+            Fail(context.error("must not be blank"))
           end
         end
       end
@@ -74,9 +74,9 @@ module Roi::Schemas
     #
     # @return self
     def regex(regex)
-      add_test do |value, context|
+      add_test('string.regex') do |value, context|
         if !regex.match(value)
-          Fail(context.error(validator_name: "#{name}.regex", message: "must match #{regex.inspect}"))
+          Fail(context.error("must match #{regex.inspect}"))
         end
       end
     end
