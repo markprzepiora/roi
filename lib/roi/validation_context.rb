@@ -6,7 +6,7 @@ module Roi
     attr_reader :path
     attr_reader :validator_name
 
-    def initialize(path:, validator_name: nil)
+    def initialize(path: nil, validator_name: nil)
       @path = path || []
       @validator_name = validator_name
     end

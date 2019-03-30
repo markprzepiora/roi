@@ -35,7 +35,7 @@ module Roi
     # @return [String]
     attr_reader :message
 
-    def initialize(path:, validator_name:, message:)
+    def initialize(path: nil, validator_name: nil, message: nil)
       @path = path
       @validator_name = validator_name
       @message = message
