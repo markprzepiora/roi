@@ -87,4 +87,21 @@ module Roi
   def self.array
     Schemas::ArraySchema.new
   end
+
+  # You may define your schema using Roi.define. The given block will be
+  # evaluated in the context of the Roi module, which means you may use
+  # `string` instead of `Roi.string`, etc., in your schema definition. This
+  # may make longer schemas much more readable!
+  #
+  # @example
+  #   schema = Roi.define do
+  #     object.keys({
+  #       user_ids: array.items(int)
+  #     })
+  #   end
+  #
+  # @yieldreturn [Roi::Schemas::BaseSchema]
+  def self.define(&block)
+    instance_eval(&block)
+  end
 end
