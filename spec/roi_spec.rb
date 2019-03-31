@@ -27,4 +27,11 @@ describe Roi do
       res.value.should == { name: "Mark" }
     end
   end
+
+  describe ".array(schema)" do
+    it "calls Roi.array.items(schema)" do
+      Roi.array(Roi.int).validate([1, 2, 3]).should be_ok
+      Roi.array(Roi.int).validate(['1', '2', '3']).should_not be_ok
+    end
+  end
 end

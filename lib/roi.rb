@@ -88,15 +88,19 @@ module Roi
   #
   # @example Reject an array with an invalid element
   #   result = Roi.array.items(Roi.int).validate(['1', '2', '3', '4'])
-  #   result.ok # => false
+  #   result.ok? # => false
   #   result.errors.first
   #   # =>
   #   #     #<Roi::ValidationError:0x00007fffb916fab0
   #   #      @path=[0], @validator_name="int", @message="must be an Integer">
   #
+  # @example `Roi.array(schema)` is short for `Roi.array.items(schema)`
+  #   result = Roi.array(Roi.string).validate(['1', '2'])
+  #   result.ok? # => true
+  #
   # @return [Schemas::ArraySchema]
-  def self.array
-    Schemas::ArraySchema.new
+  def self.array(items_schema = nil)
+    Schemas::ArraySchema.new.items(items_schema)
   end
 
   # You may define your schema using Roi.define. The given block will be
