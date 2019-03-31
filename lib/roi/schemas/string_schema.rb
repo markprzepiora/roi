@@ -77,10 +77,13 @@ module Roi::Schemas
     #   Roi.string.regex(/\A\d+\z/).validate("123-bar").ok? # => false
     #
     # @return self
-    def regex(regex)
-      add_test('string.regex') do |value, context|
+    def regex(regex, validator_name = nil, error_message = nil)
+      error_message ||= "must match #{regex.inspect}"
+      validator_name ||= "string.regex"
+
+      add_test(validator_name) do |value, context|
         if !regex.match(value)
-          Fail(context.error("must match #{regex.inspect}"))
+          Fail(context.error(error_message))
         end
       end
     end
@@ -92,7 +95,7 @@ module Roi::Schemas
     #   Roi.string.digits.validate("-1").ok? # => false
     #   Roi.string.digits.validate("123-foo").ok? # => false
     def digits
-      regex(/\A\d+\z/)
+      regex(/\A\d+\z/, 'string.digits', 'must contain only digits 0-9')
     end
 
     # String must be a certain length.
@@ -133,7 +136,7 @@ module Roi::Schemas
     end
 
     def email
-      regex(URI::MailTo::EMAIL_REGEXP)
+      regex(URI::MailTo::EMAIL_REGEXP, 'string.email', 'must be an email address')
     end
 
     private

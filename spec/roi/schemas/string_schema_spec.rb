@@ -103,5 +103,11 @@ describe "Roi.string" do
         '@nowhere.com',
         'foo bar baz@gmail.com',
       ]
+
+    include_examples "error message",
+      schema: 'Roi.string.email',
+      input_value: 'foobarbaz',
+      error_message: 'must be an email address',
+      error_path: []
   end
 end
