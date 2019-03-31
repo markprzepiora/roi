@@ -60,9 +60,20 @@ module Roi
     Schemas::NumberSchema.new
   end
 
+  # Instantiate a new Object (Hash) schema.
+  #
+  # Can use the shorthand:
+  #
+  #     Roi.object(hash)
+  #
+  # For:
+  #
+  #     Roi.object.keys(hash)
+  #
+  # @param hash [Hash{Object => Roi::Schemas::BaseSchema}]
   # @return [Schemas::ObjectSchema]
-  def self.object
-    Schemas::ObjectSchema.new
+  def self.object(hash = {})
+    Schemas::ObjectSchema.new.keys(hash)
   end
 
   # @example Match any array of values

@@ -14,6 +14,17 @@ describe Roi do
       res = schema.validate(payload)
 
       res.should be_ok
+      res.value.should == payload
+    end
+  end
+
+  describe ".object(hash)" do
+    it "calls Roi.object.keys(hash)" do
+      schema = Roi.object({ name: Roi.string })
+      res = schema.validate({ name: "Mark" })
+
+      res.should be_ok
+      res.value.should == { name: "Mark" }
     end
   end
 end
