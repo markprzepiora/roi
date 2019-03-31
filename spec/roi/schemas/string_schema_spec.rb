@@ -88,4 +88,20 @@ describe "Roi.string" do
       }.to raise_error(/must be an integer/i)
     end
   end
+
+  describe ".email" do
+    include_examples "passing and failing values",
+      schema: 'Roi.string.email',
+      passing_values: [
+        'mark.przepiora@gmail.com',
+        'test@example.org',
+        'someone@wizarding.academy',
+        'someone+foo+bar+baz@example.net',
+      ],
+      failing_values: [
+        'foo@nowhere.',
+        '@nowhere.com',
+        'foo bar baz@gmail.com',
+      ]
+  end
 end

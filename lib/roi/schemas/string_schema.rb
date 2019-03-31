@@ -1,5 +1,6 @@
 require 'roi/schemas/base_schema'
 require 'roi/support'
+require 'uri'
 
 using Roi::Support
 
@@ -129,6 +130,10 @@ module Roi::Schemas
 
       @max_length = max_length
       self
+    end
+
+    def email
+      regex(URI::MailTo::EMAIL_REGEXP)
     end
 
     private
