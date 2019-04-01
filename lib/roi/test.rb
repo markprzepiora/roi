@@ -2,12 +2,14 @@ require 'roi'
 
 class Roi::Test
   extend Forwardable
-  attr_reader :name, :proc
+  attr_reader :name, :method_name
 
-  def initialize(name, proc)
+  def initialize(name, method_name)
     @name = name
-    @proc = proc
+    @method_name = method_name
   end
 
-  def_delegators :@proc, :call, :to_proc
+  def run(schema, value, context)
+    schema.send(method_name, value, context)
+  end
 end

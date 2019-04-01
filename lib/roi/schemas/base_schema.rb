@@ -211,10 +211,8 @@ module Roi::Schemas
       end
     end
 
-    def add_test(test_name = name, method_name = nil, &block)
-      block ||= method(method_name)
-
-      @tests << Roi::Test.new(test_name, block)
+    def add_test(test_name, method_name)
+      @tests << Roi::Test.new(test_name, method_name)
       self
     end
 
@@ -247,7 +245,7 @@ module Roi::Schemas
     end
 
     def run_test(test, value, context)
-      result = instance_exec(value, context, &test)
+      result = test.run(self, value, context)
 
       case result
       when Roi::ValidationResults::Pass, Roi::ValidationResults::Fail then result
