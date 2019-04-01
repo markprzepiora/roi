@@ -62,7 +62,7 @@ update_user_schema.validate(failing_payload_1).errors.as_json
 # => [
 #      {
 #        validator_name: 'string',
-#        path: ['company', 'name'],
+#        path: [:company, :name],
 #        message: 'must be a String',
 #      }
 #    ]
