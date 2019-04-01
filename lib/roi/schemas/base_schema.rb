@@ -12,8 +12,8 @@ module Roi::Schemas
       @required = false
       @valids = Set.new
       @invalids = Set.new
-      add_test("#{name}.invalid", &method(:test_invalids))
-      add_test("#{name}.valid", &method(:test_valids))
+      add_test("invalid", &method(:test_invalids))
+      add_test("valid", &method(:test_valids))
       add_test("#{name}.cast", &method(:test_cast_value_wrapper))
     end
 
@@ -58,10 +58,6 @@ module Roi::Schemas
     def required
       @required = true
       self
-    end
-
-    def required?
-      !!@required
     end
 
     # Explicitly whitelist one or more values, no matter what any other
@@ -194,8 +190,7 @@ module Roi::Schemas
     end
 
     def test_cast_value_wrapper(value, context)
-      return if !@cast
-      cast_value(value, context)
+      cast_value(value, context) if @cast
     end
 
     def add_test(test_name = name, &block)
@@ -219,6 +214,12 @@ module Roi::Schemas
     def Fail(errors = [])
       errors = Array(errors)
       Roi::ValidationResults::Fail.new(errors)
+    end
+
+    protected
+
+    def required?
+      !!@required
     end
   end
 end
