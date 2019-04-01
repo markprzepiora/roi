@@ -81,9 +81,7 @@ module Roi::Schemas
     #
     # @return self
     def allow(*valids)
-      valids.each do |value|
-        @valids.add(value)
-      end
+      @valids = @valids | valids
       self
     end
 
@@ -108,9 +106,7 @@ module Roi::Schemas
     #
     # @return self
     def invalid(*invalids)
-      invalids.each do |value|
-        @invalids.add(value)
-      end
+      @invalids = @invalids | invalids
       self
     end
 
