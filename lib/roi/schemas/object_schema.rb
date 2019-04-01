@@ -9,8 +9,8 @@ module Roi::Schemas
       super
       @key_to_schema = {}
       add_class_test(Hash)
-      add_test('object.keys', &method(:keys_test))
-      add_test('required', &method(:required_keys_test))
+      add_test('object.keys', :keys_test)
+      add_test('required', :required_keys_test)
     end
 
     def keys(key_to_schema)

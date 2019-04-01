@@ -12,7 +12,8 @@ module Roi
     end
 
     # @return [Roi::ValidationError]
-    def error(message)
+    def error(message, validator_name: nil)
+      validator_name ||= self.validator_name
       ValidationError.new(path: path, validator_name: validator_name, message: message)
     end
 

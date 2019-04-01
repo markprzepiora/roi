@@ -4,17 +4,19 @@ module Roi::Schemas
   class BooleanSchema < BaseSchema
     def initialize
       super
-      add_test('boolean') do |value, context|
-        if ![true, false].include?(value)
-          Fail(context.error('must be a Boolean'))
-        end
-      end
+      add_test('boolean', :test_boolean)
     end
 
     private
 
     def name
       'boolean'
+    end
+
+    def test_boolean(value, context)
+      if ![true, false].include?(value)
+        Fail(context.error('must be a Boolean'))
+      end
     end
   end
 end

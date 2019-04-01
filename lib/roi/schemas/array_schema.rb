@@ -8,8 +8,8 @@ module Roi::Schemas
       @unique_remove_duplicates = false
       @items_schema = nil
       add_class_test(Array, "must be an Array")
-      add_test('array.items', &method(:items_test))
-      add_test('array.unique', &method(:uniqueness_test))
+      add_test('array.items', :items_test)
+      add_test('array.unique', :uniqueness_test)
     end
 
     def items(schema)

@@ -12,9 +12,14 @@ module Roi::Schemas
       @required = false
       @valids = Set.new
       @invalids = Set.new
-      add_test("invalid", &method(:test_invalids))
-      add_test("valid", &method(:test_valids))
-      add_test("#{name}.cast", &method(:test_cast_value_wrapper))
+      @must_bes = []
+      @must_not_bes = []
+      add_test("invalid", :test_invalids)
+      add_test("valid", :test_valids)
+      add_test("#{name}.cast", :test_cast_value_wrapper)
+      add_test("must_be", :test_must_be)
+      add_test("must_not_be", :test_must_not_be)
+      add_test(name, :test_class)
     end
 
     # @return [Roi::ValidationResults::Pass, Roi::ValidationResults::Fail]
@@ -123,16 +128,8 @@ module Roi::Schemas
     #
     # @return self
     def must_be(method_name)
-      add_test('must_be') do |value, context|
-        error = context.error("##{method_name} must be true")
-        begin
-          if !value.respond_to?(method_name) || !value.public_send(method_name)
-            Fail([error])
-          end
-        rescue StandardError => e
-          Fail([error])
-        end
-      end
+      @must_bes << method_name
+      self
     end
 
     # The value must not return a truthy value when called with the method
@@ -151,16 +148,8 @@ module Roi::Schemas
     #
     # @return self
     def must_not_be(method_name)
-      add_test('must_not_be') do |value, context|
-        error = context.error("##{method_name} must be false")
-        begin
-          if value.respond_to?(method_name) && value.public_send(method_name)
-            Fail([error])
-          end
-        rescue StandardError => e
-          Fail([error])
-        end
-      end
+      @must_not_bes << method_name
+      self
     end
 
     def cast
@@ -193,17 +182,55 @@ module Roi::Schemas
       cast_value(value, context) if @cast
     end
 
-    def add_test(test_name = name, &block)
+    def test_must_be(value, context)
+      @must_bes.each do |method_name|
+        error = context.error("##{method_name} must be true")
+        begin
+          if !value.respond_to?(method_name) || !value.public_send(method_name)
+            return Fail([error])
+          end
+        rescue StandardError => e
+          return Fail([error])
+        end
+      end
+    end
+
+    def test_must_not_be(value, context)
+      @must_not_bes.each do |method_name|
+        error = context.error("##{method_name} must be false")
+        begin
+          if value.respond_to?(method_name) && value.public_send(method_name)
+            return Fail([error])
+          end
+        rescue StandardError => e
+          return Fail([error])
+        end
+      end
+    end
+
+    def add_test(test_name = name, method_name = nil, &block)
+      block ||= method(method_name)
+
       @tests << Roi::Test.new(test_name, block)
       self
     end
 
     def add_class_test(klass, message = nil)
-      message ||= "must be a #{klass.name}"
-      add_test(name) do |value, context|
-        if !value.is_a?(klass)
-          Fail(context.error(message))
-        end
+      @klass = {
+        klass: klass,
+        message: message || "must be a #{klass.name}",
+      }
+      self
+    end
+
+    def test_class(value, context)
+      return if !@klass
+
+      klass = @klass[:klass]
+      message = @klass[:message]
+
+      if !value.is_a?(klass)
+        Fail(context.error(message))
       end
     end
 
@@ -217,7 +244,12 @@ module Roi::Schemas
     end
 
     def run_test(test, value, context)
-      instance_exec(value, context, &test) || Pass(value)
+      result = instance_exec(value, context, &test)
+
+      case result
+      when Roi::ValidationResults::Pass, Roi::ValidationResults::Fail then result
+      else Pass(value)
+      end
     end
 
     protected

@@ -31,23 +31,12 @@ module Roi::Schemas
       super
       add_class_test(String)
 
-      add_test('string.min_length') do |value, context|
-        if @min_length && value.length < @min_length
-          Fail(context.error(
-            validator_name: "#{name}.min_length",
-            message: "length must be ≥ #{@min_length}"
-          ))
-        end
-      end
-
-      add_test('string.max_length') do |value, context|
-        if @max_length && value.length > @max_length
-          Fail(context.error(
-            validator_name: "#{name}.max_length",
-            message: "length must be ≤ #{@max_length}"
-          ))
-        end
-      end
+      @present = false
+      @regexes = []
+      add_test('string.min_length', :test_min_length)
+      add_test('string.max_length', :test_max_length)
+      add_test('string.present', :test_present)
+      add_test('string.regex', :test_regex)
     end
 
     # Reject empty strings.
@@ -69,17 +58,8 @@ module Roi::Schemas
     #
     # @return self
     def present
-      add_test('string.present') do |value, context|
-        begin
-          if value.empty? || BLANK_RE.match?(value)
-            Fail(context.error("must not be blank"))
-          end
-        rescue Encoding::CompatibilityError
-          if ENCODED_BLANKS[value.encoding].match?(value)
-            Fail(context.error("must not be blank"))
-          end
-        end
-      end
+      @present = true
+      self
     end
 
     # String must match the specified regex.
@@ -92,12 +72,8 @@ module Roi::Schemas
     def regex(regex, validator_name = nil, error_message = nil)
       error_message ||= "must match #{regex.inspect}"
       validator_name ||= "string.regex"
-
-      add_test(validator_name) do |value, context|
-        if !regex.match(value)
-          Fail(context.error(error_message))
-        end
-      end
+      @regexes << { error_message: error_message, validator_name: validator_name, regex: regex }
+      self
     end
 
     # String must be composed entirely of digits. Useful for specifying numeric IDs.
@@ -155,6 +131,44 @@ module Roi::Schemas
 
     def name
       'string'
+    end
+
+    def test_min_length(value, context)
+      if @min_length && value.length < @min_length
+        Fail(context.error("length must be ≥ #{@min_length}"))
+      end
+    end
+
+    def test_max_length(value, context)
+      if @max_length && value.length > @max_length
+        Fail(context.error("length must be ≤ #{@max_length}"))
+      end
+    end
+
+    def test_present(value, context)
+      return unless @present
+
+      begin
+        if value.empty? || BLANK_RE.match?(value)
+          Fail(context.error("must not be blank"))
+        end
+      rescue Encoding::CompatibilityError
+        if ENCODED_BLANKS[value.encoding].match?(value)
+          Fail(context.error("must not be blank"))
+        end
+      end
+    end
+
+    def test_regex(value, context)
+      @regexes.each do |hash|
+        error_message = hash[:error_message]
+        validator_name = hash[:validator_name]
+        regex = hash[:regex]
+
+        if !regex.match(value)
+          return Fail(context.error(error_message, validator_name: validator_name))
+        end
+      end
     end
   end
 end

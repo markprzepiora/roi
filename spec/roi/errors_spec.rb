@@ -58,7 +58,11 @@ describe 'Schema errors' do
     schema_class = Class.new(Roi::Schemas::StringSchema) do
       def initialize
         super
-        add_test{ fail "this should be re-raised" }
+        add_test('fail', :test_fail)
+      end
+
+      def test_fail(*args)
+        fail "this should be re-raised" 
       end
     end
 
