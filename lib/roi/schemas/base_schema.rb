@@ -53,6 +53,8 @@ module Roi::Schemas
     #     })
     #     schema.validate({}).ok?
     #     # => false
+    #
+    # @return self
     def required
       @required = true
       self
@@ -62,6 +64,18 @@ module Roi::Schemas
       !!@required
     end
 
+    # Explicitly whitelist one or more values, no matter what any other
+    # requirements (except the `invalids` blacklist) say.
+    #
+    # @example
+    #   schema = Roi.int.min(100).allow(0)
+    #   schema.validate(100).ok? # => true
+    #   schema.validate(99).ok? # => false
+    #   schema.validate(0).ok? # => true
+    #
+    # @param *valids The whitelisted values.
+    #
+    # @return self
     def allow(*valids)
       valids.each do |value|
         @valids.add(value)
@@ -69,10 +83,26 @@ module Roi::Schemas
       self
     end
 
+    # Allow the value to be nil.
+    #
+    # @example
+    #   schema = Roi.string.or_nil
+    #   schema.validate("test").ok? # => true
+    #   schema.validate(nil).ok? # => true
     def or_nil
       allow(nil)
     end
 
+    # Blacklist one or more values.
+    #
+    # @example
+    #   schema = Roi.string.invalid('bar')
+    #   schema.validate('foo').ok? # => true
+    #   schema.validate('bar').ok? # => false
+    #
+    # @param *invalids The blacklisted values.
+    #
+    # @return self
     def invalid(*invalids)
       invalids.each do |value|
         @invalids.add(value)
@@ -80,6 +110,22 @@ module Roi::Schemas
       self
     end
 
+    # The value must return a truthy value when called with the method named by
+    # `method_name`.
+    #
+    # If the value does not respond to the given method name, then it is
+    # rejected as well.
+    #
+    # If the method raises an exception, then this also counts as a rejection.
+    #
+    # @param method_name [Symbol] 
+    #
+    # @example Only accept even integers.
+    #   schema = Roi.int.must_be(:even?)
+    #   schema.validate(2).ok? # => true
+    #   schema.validate(3).ok? # => false
+    #
+    # @return self
     def must_be(method_name)
       add_test('must_be') do |value, context|
         error = context.error("##{method_name} must be true")
@@ -93,6 +139,21 @@ module Roi::Schemas
       end
     end
 
+    # The value must not return a truthy value when called with the method
+    # named by `method_name`.
+    #
+    # If the value does not respond to the given method name, then it passes.
+    #
+    # If the method raises an exception, then this also counts as a rejection.
+    #
+    # @param method_name [Symbol] 
+    #
+    # @example Only accept odd integers.
+    #   schema = Roi.int.must_not_be(:even?)
+    #   schema.validate(1).ok? # => true
+    #   schema.validate(2).ok? # => false
+    #
+    # @return self
     def must_not_be(method_name)
       add_test('must_not_be') do |value, context|
         error = context.error("##{method_name} must be false")
