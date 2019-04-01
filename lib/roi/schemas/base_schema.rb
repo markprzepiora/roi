@@ -23,7 +23,7 @@ module Roi::Schemas
 
       @tests.each do |test|
         test_context = context.set_validator_name(test.name)
-        result = test.call(value, test_context) || Pass(value)
+        result = run_test(test, value, test_context)
 
         return result if !result.ok? || result.pass_early?
 
@@ -214,6 +214,10 @@ module Roi::Schemas
     def Fail(errors = [])
       errors = Array(errors)
       Roi::ValidationResults::Fail.new(errors)
+    end
+
+    def run_test(test, value, context)
+      instance_exec(value, context, &test) || Pass(value)
     end
 
     protected

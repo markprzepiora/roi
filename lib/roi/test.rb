@@ -9,5 +9,5 @@ class Roi::Test
     @proc = proc
   end
 
-  def_delegator :@proc, :call
+  def_delegators :@proc, :call, :to_proc
 end
