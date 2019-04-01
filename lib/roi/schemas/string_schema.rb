@@ -14,6 +14,18 @@ module Roi::Schemas
       h[enc] = Regexp.new(BLANK_RE.source.encode(enc), BLANK_RE.options | Regexp::FIXEDENCODING)
     end
 
+    # Lifted from `URI::MailTo::EMAIL_REGEXP` in Ruby 2.2+
+    #
+    # @!visibility private
+    EMAIL_REGEX = /
+      \A
+      [a-zA-Z0-9.!\#$%&'*+\/=?^_`{|}~-]+
+      @
+      [a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?
+      (?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*
+      \z
+    /x
+
     # @!visibility private
     def initialize
       super
@@ -136,7 +148,7 @@ module Roi::Schemas
     end
 
     def email
-      regex(URI::MailTo::EMAIL_REGEXP, 'string.email', 'must be an email address')
+      regex(EMAIL_REGEX, 'string.email', 'must be an email address')
     end
 
     private
