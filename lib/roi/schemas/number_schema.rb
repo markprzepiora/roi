@@ -5,6 +5,9 @@ module Roi::Schemas
     def initialize
       super
 
+      @min = nil
+      @max = nil
+
       add_class_test(Numeric, "must be Numeric")
       add_test("#{name}.min", :test_min)
       add_test("#{name}.max", :test_max)

@@ -9,11 +9,14 @@ module Roi::Schemas
   class BaseSchema
     def initialize
       @tests = []
+
       @required = false
       @valids = Set.new
       @invalids = Set.new
       @must_bes = []
       @must_not_bes = []
+      @klass = nil
+
       add_test("invalid", :test_invalids)
       add_test("valid", :test_valids)
       add_test("#{name}.cast", :test_cast_value_wrapper)

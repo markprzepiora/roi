@@ -31,8 +31,11 @@ module Roi::Schemas
       super
       add_class_test(String)
 
+      @min_length = nil
+      @max_length = nil
       @present = false
       @regexes = []
+
       add_test('string.min_length', :test_min_length)
       add_test('string.max_length', :test_max_length)
       add_test('string.present', :test_present)
