@@ -33,9 +33,6 @@ module Roi::Schemas
       Pass(value)
     end
 
-    def run_test(test, value, context)
-    end
-
     # A schema being "required" or "optional" changes its behaviour when it
     # applies to an object's value. By default, defined key/values can be
     # missing from the validated object.
