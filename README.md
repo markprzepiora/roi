@@ -1,4 +1,4 @@
-# Roi
+# Roi [![Build Status](https://travis-ci.org/markprzepiora/roi.svg?branch=master)](https://travis-ci.org/markprzepiora/roi) [![Test Coverage](https://api.codeclimate.com/v1/badges/bec5a607a62ba4cacbea/test_coverage)](https://codeclimate.com/github/markprzepiora/roi/test_coverage)
 
 Roi is a spiritual-reimplementation of [joi](https://github.com/hapijs/joi) in Ruby.
 
