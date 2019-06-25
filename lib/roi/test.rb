@@ -1,3 +1,5 @@
+# typed: true
+
 require 'roi'
 
 class Roi::Test

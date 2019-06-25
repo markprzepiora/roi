@@ -1,3 +1,4 @@
+# typed: true
 require 'roi/schemas/base_schema'
 
 module Roi::Schemas

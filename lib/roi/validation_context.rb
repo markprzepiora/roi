@@ -1,3 +1,4 @@
+# typed: true
 require 'roi'
 require 'roi/validation_error'
 

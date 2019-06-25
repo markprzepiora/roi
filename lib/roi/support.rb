@@ -1,3 +1,4 @@
+# typed: false
 require 'roi'
 
 module Roi::Support

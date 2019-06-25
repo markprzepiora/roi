@@ -1,3 +1,4 @@
+# typed: true
 require 'roi/schemas/base_schema'
 require 'roi/support'
 require 'uri'

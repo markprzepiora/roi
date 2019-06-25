@@ -1,3 +1,4 @@
+# typed: true
 require 'roi/validation_results'
 
 class Roi::ValidationResults::Pass

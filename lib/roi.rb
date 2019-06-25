@@ -1,3 +1,4 @@
+# typed: false
 require 'roi/version'
 require 'roi/schemas/any_schema'
 require 'roi/schemas/enum_schema'
