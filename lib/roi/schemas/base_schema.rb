@@ -1,4 +1,5 @@
 # typed: false
+
 require 'set'
 require 'roi/schemas'
 require 'roi/validation_context'
