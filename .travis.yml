@@ -20,6 +20,6 @@ cache:
   - bundler
   - directories:
      - /home/travis/.rvm/
-script: bundle exec rspec -fd
+script: bundle exec srb tc && bundle exec rspec -fd
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
