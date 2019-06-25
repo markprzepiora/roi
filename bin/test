@@ -8,3 +8,4 @@ set -eux
 cd "${PROGDIR}/.."
 bin/srb tc
 bin/rspec
+bundle exec yard doc
