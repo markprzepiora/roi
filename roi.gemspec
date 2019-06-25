@@ -42,5 +42,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "yard", "~> 0.9.18"
   spec.add_development_dependency "pry"
   spec.add_development_dependency "sorbet"
-  spec.add_development_dependency "sorbet-runtime"
+  spec.add_runtime_dependency "sorbet-runtime"
 end
