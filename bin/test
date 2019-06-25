@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+readonly PROGDIR=$(cd "${0%/*}" && pwd)
+
+set -o pipefail
+set -eux
+
+cd "${PROGDIR}/.."
+bin/srb tc
+bin/rspec
