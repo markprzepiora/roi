@@ -1,4 +1,5 @@
-# typed: false
+# typed: true
+
 require 'roi/version'
 require 'roi/schemas/any_schema'
 require 'roi/schemas/enum_schema'
@@ -8,8 +9,11 @@ require 'roi/schemas/int_schema'
 require 'roi/schemas/number_schema'
 require 'roi/schemas/object_schema'
 require 'roi/schemas/array_schema'
+require 'sorbet-runtime'
 
 module Roi
+  extend T::Sig
+
   # @example Match any non-nil value
   #   result = Roi.any.validate("Hello World!")
   #   result.ok? # => true
@@ -21,6 +25,7 @@ module Roi
   #   result.errors.first.message # => "must not be nil"
   #
   # @return [Schemas::AnySchema]
+  sig{ returns(Schemas::AnySchema) }
   def self.any
     Schemas::AnySchema.new
   end
@@ -37,26 +42,31 @@ module Roi
   #
   # @param *values [Array<Object>]
   # @return [Schemas::EnumSchema]
+  sig{ params(values: T.untyped).returns(Schemas::EnumSchema) }
   def self.enum(*values)
-    Schemas::EnumSchema.new.values(*values)
+    T.unsafe(Schemas::EnumSchema.new).values(*values)
   end
 
   # @return [Schemas::BooleanSchema]
+  sig{ returns(Schemas::BooleanSchema) }
   def self.boolean
     Schemas::BooleanSchema.new
   end
 
   # @return [Schemas::StringSchema]
+  sig{ returns(Schemas::StringSchema) }
   def self.string
     Schemas::StringSchema.new
   end
 
   # @return [Schemas::IntSchema]
+  sig{ returns(Schemas::IntSchema) }
   def self.int
     Schemas::IntSchema.new
   end
 
   # @return [Schemas::NumberSchema]
+  sig{ returns(Schemas::NumberSchema) }
   def self.number
     Schemas::NumberSchema.new
   end
@@ -73,6 +83,7 @@ module Roi
   #
   # @param hash [Hash{Object => Roi::Schemas::BaseSchema}]
   # @return [Schemas::ObjectSchema]
+  sig{ params(hash: T::Hash[T.any(String, Symbol), Roi::Schemas::BaseSchema]).returns(Schemas::ObjectSchema) }
   def self.object(hash = {})
     Schemas::ObjectSchema.new.keys(hash)
   end
@@ -100,6 +111,7 @@ module Roi
   #   result.ok? # => true
   #
   # @return [Schemas::ArraySchema]
+  sig{ params(items_schema: T.nilable(Roi::Schemas::BaseSchema)).returns(Schemas::ArraySchema) }
   def self.array(items_schema = nil)
     Schemas::ArraySchema.new.items(items_schema)
   end
