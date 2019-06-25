@@ -27,6 +27,7 @@ module Roi::Schemas
       \z
     /x
 
+    sig{ void }
     # @!visibility private
     def initialize
       super
@@ -43,6 +44,7 @@ module Roi::Schemas
       add_test('string.regex', :test_regex)
     end
 
+    sig{ returns StringSchema }
     # Reject empty strings.
     #
     # @example
@@ -54,6 +56,7 @@ module Roi::Schemas
       invalid('')
     end
 
+    sig{ returns StringSchema }
     # Reject blank strings.
     #
     # @example
@@ -66,6 +69,10 @@ module Roi::Schemas
       self
     end
 
+    sig{
+      params(regex: Regexp, validator_name: T.nilable(String), error_message: T.nilable(String)).
+      returns(StringSchema)
+    }
     # String must match the specified regex.
     #
     # @example

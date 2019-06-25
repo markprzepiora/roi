@@ -41,7 +41,7 @@ module Roi
   #   result.ok? # => false
   #   result.errors.first.message # => must be one of #<Set: {"stopped", "running", "failed"}>
   #
-  # @param *values [Array<Object>]
+  # @param values [Array<Object>]
   # @return [Schemas::EnumSchema]
   def self.enum(*values)
     T.unsafe(Schemas::EnumSchema.new).values(*values)

@@ -3,6 +3,7 @@ require 'roi/schemas/base_schema'
 
 module Roi::Schemas
   class ArraySchema < BaseSchema
+    sig{ void }
     def initialize
       super
       @unique = false

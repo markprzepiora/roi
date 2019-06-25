@@ -87,7 +87,7 @@ module Roi::Schemas
     #   schema.validate(99).ok? # => false
     #   schema.validate(0).ok? # => true
     #
-    # @param *valids The whitelisted values.
+    # @param valids [Array] The whitelisted values.
     #
     # @return self
     def allow(*valids)
@@ -113,7 +113,7 @@ module Roi::Schemas
     #   schema.validate('foo').ok? # => true
     #   schema.validate('bar').ok? # => false
     #
-    # @param *invalids The blacklisted values.
+    # @param invalids [Array] The blacklisted values.
     #
     # @return self
     def invalid(*invalids)

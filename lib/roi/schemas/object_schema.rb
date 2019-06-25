@@ -6,6 +6,7 @@ using Roi::Support
 
 module Roi::Schemas
   class ObjectSchema < BaseSchema
+    sig{ void }
     def initialize
       super
       @key_to_schema = {}
@@ -14,11 +15,13 @@ module Roi::Schemas
       add_test('required', :required_keys_test)
     end
 
+    sig{ params(key_to_schema: T::Hash[T.untyped, BaseSchema]).returns(ObjectSchema) }
     def keys(key_to_schema)
       @key_to_schema = @key_to_schema.merge(key_to_schema)
       self
     end
 
+    sig{ params(key_to_schema: T::Hash[T.untyped, BaseSchema]).returns(ObjectSchema) }
     def require(key_to_schema)
       key_to_schema = key_to_schema.map do |key, schema|
         [key, schema.required]
@@ -28,6 +31,10 @@ module Roi::Schemas
 
     private
 
+    sig{
+      params(hash: Hash, context: Roi::ValidationContext).
+      returns(T.nilable(T.any(Roi::ValidationResults::Pass, Roi::ValidationResults::Fail)))
+    }
     def required_keys_test(hash, context)
       errors = @key_to_schema.select do |key, schema|
         schema.required? && !hash.key?(key)
@@ -40,6 +47,10 @@ module Roi::Schemas
       end
     end
 
+    sig{
+      params(input_hash: Hash, context: Roi::ValidationContext).
+      returns(T.nilable(T.any(Roi::ValidationResults::Pass, Roi::ValidationResults::Fail)))
+    }
     def keys_test(input_hash, context)
       hash = input_hash.dup
 
@@ -54,6 +65,7 @@ module Roi::Schemas
       Pass(hash.slice(*@key_to_schema.keys))
     end
 
+    sig{ returns String }
     def name
       'object'
     end
