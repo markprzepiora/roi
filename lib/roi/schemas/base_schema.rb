@@ -5,9 +5,12 @@ require 'roi/validation_context'
 require 'roi/validation_results/pass'
 require 'roi/validation_results/fail'
 require 'roi/test'
+require 'sorbet-runtime'
 
 module Roi::Schemas
   class BaseSchema
+    extend T::Sig
+
     def initialize
       @tests = []
 
@@ -26,6 +29,10 @@ module Roi::Schemas
       add_test(name, :test_class)
     end
 
+    sig{
+      params(value: T.untyped, context: T.nilable(Roi::ValidationContext)).
+      returns(T.any(Roi::ValidationResults::Pass, Roi::ValidationResults::Fail))
+    }
     # @return [Roi::ValidationResults::Pass, Roi::ValidationResults::Fail]
     def validate(value, context = nil)
       context ||= Roi::ValidationContext.new(path: [])
@@ -42,6 +49,7 @@ module Roi::Schemas
       Pass(value)
     end
 
+    sig{ returns(Roi::Schemas::BaseSchema) }
     # A schema being "required" or "optional" changes its behaviour when it
     # applies to an object's value. By default, defined key/values can be
     # missing from the validated object.
@@ -69,6 +77,7 @@ module Roi::Schemas
       self
     end
 
+    sig{ params(valids: T.untyped).returns(Roi::Schemas::BaseSchema) }
     # Explicitly whitelist one or more values, no matter what any other
     # requirements (except the `invalids` blacklist) say.
     #
@@ -86,6 +95,7 @@ module Roi::Schemas
       self
     end
 
+    sig{ returns(Roi::Schemas::BaseSchema) }
     # Allow the value to be nil.
     #
     # @example
@@ -208,11 +218,13 @@ module Roi::Schemas
       end
     end
 
+    sig{ params(test_name: String, method_name: Symbol).returns(Roi::Schemas::BaseSchema) }
     def add_test(test_name, method_name)
       @tests << Roi::Test.new(test_name, method_name)
       self
     end
 
+    sig{ params(klass: Class, message: T.nilable(String)).returns(Roi::Schemas::BaseSchema) }
     def add_class_test(klass, message = nil)
       @klass = {
         klass: klass,
@@ -236,11 +248,19 @@ module Roi::Schemas
       Roi::ValidationResults::Pass.new(*args)
     end
 
+    sig{
+      params(errors: T.any(T::Array[Roi::ValidationError], Roi::ValidationError)).
+      returns(Roi::ValidationResults::Fail)
+    }
     def Fail(errors = [])
       errors = Array(errors)
       Roi::ValidationResults::Fail.new(errors)
     end
 
+    sig{
+      params(test: Roi::Test, value: T.untyped, context: Roi::ValidationContext).
+      returns(T.any(Roi::ValidationResults::Pass, Roi::ValidationResults::Fail))
+    }
     def run_test(test, value, context)
       result = test.run(self, value, context)
 
@@ -252,6 +272,7 @@ module Roi::Schemas
 
     protected
 
+    sig{ returns(T::Boolean) }
     def required?
       !!@required
     end

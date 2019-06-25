@@ -21,8 +21,8 @@ class Roi::ValidationResults::Pass
     @pass_early = pass_early
   end
 
-  # @return true
   sig{ returns(T::Boolean) }
+  # @return true
   def ok?
     true
   end
