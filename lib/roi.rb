@@ -14,6 +14,7 @@ require 'sorbet-runtime'
 module Roi
   extend T::Sig
 
+  sig{ returns(Schemas::AnySchema) }
   # @example Match any non-nil value
   #   result = Roi.any.validate("Hello World!")
   #   result.ok? # => true
@@ -25,11 +26,11 @@ module Roi
   #   result.errors.first.message # => "must not be nil"
   #
   # @return [Schemas::AnySchema]
-  sig{ returns(Schemas::AnySchema) }
   def self.any
     Schemas::AnySchema.new
   end
 
+  sig{ params(values: T.untyped).returns(Schemas::EnumSchema) }
   # @example Match only a specific list of values (passing)
   #   result = Roi.enum('stopped', 'running', 'failed').validate('stopped')
   #   result.ok? # => true
@@ -42,35 +43,35 @@ module Roi
   #
   # @param *values [Array<Object>]
   # @return [Schemas::EnumSchema]
-  sig{ params(values: T.untyped).returns(Schemas::EnumSchema) }
   def self.enum(*values)
     T.unsafe(Schemas::EnumSchema.new).values(*values)
   end
 
-  # @return [Schemas::BooleanSchema]
   sig{ returns(Schemas::BooleanSchema) }
+  # @return [Schemas::BooleanSchema]
   def self.boolean
     Schemas::BooleanSchema.new
   end
 
-  # @return [Schemas::StringSchema]
   sig{ returns(Schemas::StringSchema) }
+  # @return [Schemas::StringSchema]
   def self.string
     Schemas::StringSchema.new
   end
 
-  # @return [Schemas::IntSchema]
   sig{ returns(Schemas::IntSchema) }
+  # @return [Schemas::IntSchema]
   def self.int
     Schemas::IntSchema.new
   end
 
-  # @return [Schemas::NumberSchema]
   sig{ returns(Schemas::NumberSchema) }
+  # @return [Schemas::NumberSchema]
   def self.number
     Schemas::NumberSchema.new
   end
 
+  sig{ params(hash: T::Hash[T.any(String, Symbol), Roi::Schemas::BaseSchema]).returns(Schemas::ObjectSchema) }
   # Instantiate a new Object (Hash) schema.
   #
   # Can use the shorthand:
@@ -83,11 +84,11 @@ module Roi
   #
   # @param hash [Hash{Object => Roi::Schemas::BaseSchema}]
   # @return [Schemas::ObjectSchema]
-  sig{ params(hash: T::Hash[T.any(String, Symbol), Roi::Schemas::BaseSchema]).returns(Schemas::ObjectSchema) }
   def self.object(hash = {})
     Schemas::ObjectSchema.new.keys(hash)
   end
 
+  sig{ params(items_schema: T.nilable(Roi::Schemas::BaseSchema)).returns(Schemas::ArraySchema) }
   # @example Match any array of values
   #   result = Roi.array.validate([])
   #   result.ok? # => true
@@ -111,7 +112,6 @@ module Roi
   #   result.ok? # => true
   #
   # @return [Schemas::ArraySchema]
-  sig{ params(items_schema: T.nilable(Roi::Schemas::BaseSchema)).returns(Schemas::ArraySchema) }
   def self.array(items_schema = nil)
     Schemas::ArraySchema.new.items(items_schema)
   end

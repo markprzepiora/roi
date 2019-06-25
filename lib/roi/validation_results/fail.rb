@@ -14,8 +14,8 @@ class Roi::ValidationResults::Fail
     @errors = errors
   end
 
-  # @return false
   sig{ returns(T::Boolean) }
+  # @return false
   def ok?
     false
   end
