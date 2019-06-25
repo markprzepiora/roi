@@ -13,15 +13,21 @@ module Roi::Schemas
       add_test('array.unique', :uniqueness_test)
     end
 
+    sig{
+      params(schema: T.nilable(Roi::Schemas::BaseSchema)).
+      returns(Roi::Schemas::ArraySchema)
+    }
     def items(schema)
       @items_schema = schema
       self
     end
 
+    sig{ returns(Roi::Schemas::ArraySchema) }
     def nonempty
       must_not_be(:empty?)
     end
 
+    sig{ params(remove_duplicates: T::Boolean).returns(Roi::Schemas::ArraySchema) }
     def unique(remove_duplicates: false)
       @unique = true
       @unique_remove_duplicates = remove_duplicates
@@ -30,6 +36,10 @@ module Roi::Schemas
 
     private
 
+    sig{
+      params(array: T::Array[T.untyped], context: Roi::ValidationContext).
+      returns(T.nilable(T.any(Roi::ValidationResults::Pass, Roi::ValidationResults::Fail)))
+    }
     def items_test(array, context)
       return if !@items_schema
 
@@ -46,6 +56,10 @@ module Roi::Schemas
       end
     end
 
+    sig{
+      params(array: T::Array[T.untyped], context: Roi::ValidationContext).
+      returns(T.nilable(T.any(Roi::ValidationResults::Pass, Roi::ValidationResults::Fail)))
+    }
     def uniqueness_test(array, context)
       return if !@unique
 
@@ -58,6 +72,7 @@ module Roi::Schemas
       end
     end
 
+    sig{ returns String }
     def name
       'array'
     end
